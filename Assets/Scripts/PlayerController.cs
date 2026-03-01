@@ -21,6 +21,8 @@ public class PlayerController : NetworkBehaviour
         if(!IsOwner)
         {
             playerCamera.enabled = false;
+            controller.enabled = false;   // important
+            return;
         }
 
         Cursor.lockState = CursorLockMode.Locked;
