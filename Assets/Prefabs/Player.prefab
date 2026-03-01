@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 2988927939860123743}
   - component: {fileID: -6906407109893877110}
   - component: {fileID: 5072661962351531961}
+  - component: {fileID: 596615805062770996}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -247,6 +248,21 @@ MonoBehaviour:
   hostHandMaterial: {fileID: 2100000, guid: 42ff7d5170363a04abcbc610cb005f5f, type: 2}
   clientBodyMaterial: {fileID: 2100000, guid: 166a95688d875e140a130c4de7a6c31a, type: 2}
   clientHandMaterial: {fileID: 2100000, guid: 85a27c73a024e9545bba4ee6128ad8eb, type: 2}
+--- !u!114 &596615805062770996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6864775169101377494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f94a8146ffab42648bf94902034b1821, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  Hospital:
+    m_InternalValue: 0
 --- !u!1 &6912588343692552901
 GameObject:
   m_ObjectHideFlags: 0

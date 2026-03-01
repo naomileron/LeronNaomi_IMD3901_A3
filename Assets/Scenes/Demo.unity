@@ -327,14 +327,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 82202797}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29860bacbab705541af2e07f2dab4e75, type: 3}
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  hospitalOnePatient: {fileID: 0}
-  hospitalTwoPatient: {fileID: 0}
-  hOneRoomSpawns: []
-  hTwoRoomSpawns: []
+  hospital: 1
+  roomNumber: 6
 --- !u!1001 &103964771
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -448,6 +445,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 172371655}
+  - component: {fileID: 172371656}
   m_Layer: 0
   m_Name: HTwo_RoomFive
   m_TagString: Untagged
@@ -470,6 +468,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1995935570}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &172371656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172371654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 1
+  roomNumber: 5
 --- !u!1 &195046473
 GameObject:
   m_ObjectHideFlags: 0
@@ -811,6 +823,204 @@ Transform:
   - {fileID: 837040114}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &279086166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 279086169}
+  - component: {fileID: 279086167}
+  - component: {fileID: 279086168}
+  - component: {fileID: 279086170}
+  - component: {fileID: 279086171}
+  m_Layer: 0
+  m_Name: AnnouncementSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &279086167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279086166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1454641441
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &279086168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279086166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e333433f44d52942b6e983bc8c344f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  source: {fileID: 279086170}
+  hOneRoomClips:
+  - {fileID: 8300000, guid: a3cc3b37f559f7444a72a5ea13462edd, type: 3}
+  - {fileID: 8300000, guid: a9dc027867eeff144ae726d455291e74, type: 3}
+  - {fileID: 8300000, guid: 1f52210b06ebf0b448052f16796fc0ca, type: 3}
+  - {fileID: 8300000, guid: c01a9ab7ef3447a4f80dcad60d807abc, type: 3}
+  - {fileID: 8300000, guid: a7f6ad890fce4bf46a66acb5e2ad9dd9, type: 3}
+  - {fileID: 8300000, guid: 6389aa859af329b48be603028ca2bf83, type: 3}
+  hTwoRoomClips:
+  - {fileID: 8300000, guid: 4b4844a3086079a4483aacd2b73122a9, type: 3}
+  - {fileID: 8300000, guid: f331a2c8e409e9949a78dac57958ad6f, type: 3}
+  - {fileID: 8300000, guid: 418164529f36245448f183a688188e04, type: 3}
+  - {fileID: 8300000, guid: 23126a72d5cfdea4781e1ed054286b4e, type: 3}
+  - {fileID: 8300000, guid: 70f9f180b5480574b932cd8102c817a0, type: 3}
+  - {fileID: 8300000, guid: dbe4377f98a391a44a6c6935d45d14dc, type: 3}
+--- !u!4 &279086169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279086166}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.90873, y: 0, z: -13.7944}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &279086170
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279086166}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &279086171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279086166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2845d2ef9cce6544888458f9b4d535b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hostOnlyAudio: 1
 --- !u!1001 &280586359
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -956,6 +1166,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 324615941}
+  - component: {fileID: 324615942}
   m_Layer: 0
   m_Name: HTwo_RoomOne
   m_TagString: Untagged
@@ -978,6 +1189,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1995935570}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &324615942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324615940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 1
+  roomNumber: 1
 --- !u!4 &325465061 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8507840663498512909, guid: 0adcd62b60a53e84c9ec0e431ed4458d, type: 3}
@@ -1065,6 +1290,7 @@ MonoBehaviour:
   - {fileID: 1263064013}
   - {fileID: 172371655}
   - {fileID: 82202798}
+  announcementSystem: {fileID: 279086168}
 --- !u!4 &374061324
 Transform:
   m_ObjectHideFlags: 0
@@ -2438,6 +2664,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 890921877}
+  - component: {fileID: 890921878}
   m_Layer: 0
   m_Name: HTwo_RoomTwo
   m_TagString: Untagged
@@ -2460,6 +2687,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1995935570}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &890921878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 890921876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 1
+  roomNumber: 2
 --- !u!1001 &971397818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2531,6 +2772,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1013589977}
+  - component: {fileID: 1013589978}
   m_Layer: 0
   m_Name: HOne_RoomSix
   m_TagString: Untagged
@@ -2553,6 +2795,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1186384307}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &1013589978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013589976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 0
+  roomNumber: 6
 --- !u!4 &1018802658 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 75546abd98a8a034c87815a4b65ec18a, type: 3}
@@ -3198,6 +3454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1263064013}
+  - component: {fileID: 1263064014}
   m_Layer: 0
   m_Name: HTwo_RoomFour
   m_TagString: Untagged
@@ -3220,6 +3477,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1995935570}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &1263064014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263064012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 1
+  roomNumber: 4
 --- !u!1001 &1265021003
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3528,6 +3799,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1389557350}
+  - component: {fileID: 1389557351}
   m_Layer: 0
   m_Name: HOne_RoomThree
   m_TagString: Untagged
@@ -3550,6 +3822,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1186384307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1389557351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389557349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 0
+  roomNumber: 3
 --- !u!4 &1389628903 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9332dfe27fc70644ea18d450910081fe, type: 3}
@@ -4294,6 +4580,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1606147233}
+  - component: {fileID: 1606147234}
   m_Layer: 0
   m_Name: HOne_RoomFour
   m_TagString: Untagged
@@ -4316,6 +4603,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1186384307}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &1606147234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606147232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 0
+  roomNumber: 4
 --- !u!1 &1615046134
 GameObject:
   m_ObjectHideFlags: 0
@@ -4921,6 +5222,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1811140240}
+  - component: {fileID: 1811140241}
   m_Layer: 0
   m_Name: HOne_RoomFive
   m_TagString: Untagged
@@ -4943,6 +5245,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1186384307}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &1811140241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811140239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 0
+  roomNumber: 5
 --- !u!1001 &1834519641
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5101,6 +5417,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1907946989}
+  - component: {fileID: 1907946990}
   m_Layer: 0
   m_Name: HOne_RoomOne
   m_TagString: Untagged
@@ -5123,6 +5440,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1186384307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1907946990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907946988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 0
+  roomNumber: 1
 --- !u!1 &1940684266
 GameObject:
   m_ObjectHideFlags: 0
@@ -5430,14 +5761,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2094895126}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29860bacbab705541af2e07f2dab4e75, type: 3}
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  hospitalOnePatient: {fileID: 0}
-  hospitalTwoPatient: {fileID: 0}
-  hOneRoomSpawns: []
-  hTwoRoomSpawns: []
+  hospital: 1
+  roomNumber: 3
 --- !u!1001 &2104524370
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5571,6 +5899,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2142364024}
+  - component: {fileID: 2142364025}
   m_Layer: 0
   m_Name: HOne_RoomTwo
   m_TagString: Untagged
@@ -5593,6 +5922,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1186384307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2142364025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142364023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da48de583fb0065449e99acfee42ac97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hospital: 0
+  roomNumber: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5605,3 +5948,4 @@ SceneRoots:
   - {fileID: 1186384307}
   - {fileID: 1995935570}
   - {fileID: 374061324}
+  - {fileID: 279086169}
