@@ -14,6 +14,11 @@ public class PlayerController : NetworkBehaviour
 
     float xRotation = 0f;
 
+    private void Awake()
+    {
+        // Prevent spawn-collision correction during the same frame as spawn
+        if (controller != null) controller.enabled = false;
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -21,15 +26,25 @@ public class PlayerController : NetworkBehaviour
         if(!IsOwner)
         {
             playerCamera.enabled = false;
-            controller.enabled = false;   // important
             return;
         }
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        StartCoroutine(EnableControllerNextFrame());
+
     }
 
+    private System.Collections.IEnumerator EnableControllerNextFrame()
+    {
+        yield return null;
+        if (controller != null)
+        {
+            controller.center = new Vector3(0f, controller.height * 0.5f, 0f);
+            controller.enabled = true;
+        }
+    }
 
     /*
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -47,6 +62,11 @@ public class PlayerController : NetworkBehaviour
     {
 
         if(!IsOwner)
+        {
+            return;
+        }
+
+        if (controller == null || !controller.enabled)
         {
             return;
         }
