@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 24, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &416529912252363506
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a6d7c705546244f4fa21c64ecc0e4efe, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 409b3d529fcf2fb4799485093a6b93ed, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: -6906407109893877110}
   - component: {fileID: 5072661962351531961}
   - component: {fileID: 596615805062770996}
+  - component: {fileID: 6353600314422221153}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -263,6 +264,29 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital:
     m_InternalValue: 0
+--- !u!114 &6353600314422221153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6864775169101377494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f0b8da27b48264c8873dba5d39114f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  playerCamera: {fileID: 2987324807276187964}
+  interactDistance: 3
+  interactMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  uiCanvas: {fileID: 4937527107297036023}
+  crosshair: {fileID: 384810683561776947}
+  defaultColour: {r: 1, g: 1, b: 1, a: 1}
+  hostInRangeColour: {r: 0, g: 0, b: 1, a: 1}
+  clientInRangeColour: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &6912588343692552901
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,7 +427,6 @@ GameObject:
   - component: {fileID: 4937527107297036023}
   - component: {fileID: 809512234238343198}
   - component: {fileID: 7170847356166897620}
-  - component: {fileID: 3366358094781641241}
   m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
@@ -494,21 +517,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3366358094781641241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7152371592675495782}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fed70344c73d14248bf69ffda3a2971d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  crosshairImage: {fileID: 384810683561776947}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  interactColor: {r: 1, g: 0.60062885, b: 0.84254533, a: 1}
 --- !u!1001 &366645617215648022
 PrefabInstance:
   m_ObjectHideFlags: 0

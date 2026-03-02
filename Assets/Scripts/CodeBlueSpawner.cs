@@ -4,40 +4,109 @@ using UnityEngine;
 
 public class CodeBlueManager : NetworkBehaviour
 {
-    // patient prefabs
     [SerializeField] private NetworkObject hospitalOnePatient;
     [SerializeField] private NetworkObject hospitalTwoPatient;
 
-    // Array of spawn points for each hospital
     [SerializeField] private Transform[] hOneRoomSpawns;
     [SerializeField] private Transform[] hTwoRoomSpawns;
 
-    // reference to the announcement system gameobject in the scene
     [SerializeField] private AnnouncementSystem announcementSystem;
 
-    // Variables for keeping track of the current patient
     private NetworkObject currentHOnePatient;
     private NetworkObject currentHTwoPatient;
 
-    // TEMP TEST BUTTON
-    [ContextMenu("Trigger Code Blue")]
-    public void TriggerCodeBlue()
-    {
-        Debug.Log($"[CodeBlueManager] TriggerCodeBlue clicked. IsServer={IsServer} IsHost={NetworkManager.Singleton.IsHost}");
+    private bool started;
 
+    public override void OnNetworkSpawn()
+    {
         if (!IsServer) return;
 
-        SpawnPatient(ref currentHOnePatient, hospitalOnePatient, hOneRoomSpawns, HospitalType.Blue);
-        SpawnPatient(ref currentHTwoPatient, hospitalTwoPatient, hTwoRoomSpawns, HospitalType.Green);
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+
+        //in case both are already connected by the time this spawns
+        TryStart();
     }
 
-    // makes a list of client IDs that should receive the announcement,
-    // ensuring that competitors don't hear the other hospital
-    private ClientRpcParams BuildTargetsForHospital(HospitalType hospital)
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+        }
+    }
+
+    void OnClientConnected(ulong clientId)
+    {
+        if (!IsServer) return;
+
+        TryStart();
+    }
+
+    void TryStart()
+    {
+        if (started) return;
+
+        //assignment requires 2 players only
+        int connected = NetworkManager.Singleton.ConnectedClientsList.Count;
+
+        if (connected < 2)
+        {
+            Debug.Log($"[CodeBlueManager] Waiting for players. Connected={connected}/2");
+            return;
+        }
+
+        started = true;
+
+        Debug.Log("[CodeBlueManager] Both players connected. Spawning first code blue.");
+        TriggerCodeBlue();
+    }
+
+    public void TriggerCodeBlue()
+    {
+        if (!IsServer) return;
+
+        SpawnPatient(ref currentHOnePatient, hospitalOnePatient, hOneRoomSpawns);
+        SpawnPatient(ref currentHTwoPatient, hospitalTwoPatient, hTwoRoomSpawns);
+    }
+
+    void SpawnPatient(ref NetworkObject currentPatient, NetworkObject prefab, Transform[] spawnPoints)
+    {
+        if (currentPatient != null && currentPatient.IsSpawned)
+        {
+            currentPatient.Despawn(true);
+        }
+
+        int randomIndex = Random.Range(0, spawnPoints.Length);
+        Transform spawn = spawnPoints[randomIndex];
+
+        NetworkObject patient = Instantiate(prefab, spawn.position, spawn.rotation);
+        patient.Spawn(true);
+
+        currentPatient = patient;
+
+        RoomSpawnPoint info = spawn.GetComponent<RoomSpawnPoint>();
+
+        HospitalType hospital = (info != null) ? info.Hospital : HospitalType.Blue;
+        int roomNumber = (info != null) ? info.RoomNumber : (randomIndex + 1);
+
+        Debug.Log($"[CodeBlueManager] Code Blue spawned at {spawn.name} hospital={hospital} room={roomNumber}");
+
+        if (announcementSystem != null)
+        {
+            ClientRpcParams targets = BuildTargetsForHospital(hospital);
+            announcementSystem.PlayRoomAnnouncementClientRpc(hospital, roomNumber, targets);
+        }
+        else
+        {
+            Debug.LogWarning("AnnouncementSystem not assigned.");
+        }
+    }
+
+    ClientRpcParams BuildTargetsForHospital(HospitalType hospital)
     {
         List<ulong> targets = new List<ulong>();
-
-        Debug.Log($"[CodeBlueManager] BuildTargetsForHospital({hospital}) connectedClients={NetworkManager.Singleton.ConnectedClientsList.Count}");
 
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
@@ -45,18 +114,13 @@ public class CodeBlueManager : NetworkBehaviour
             if (playerObj == null) continue;
 
             var ph = playerObj.GetComponent<PlayerHospital>();
-            Debug.Log($"[CodeBlueManager] playerObj={playerObj.name} has PlayerHospital? {ph != null}");
             if (ph == null) continue;
-
-            Debug.Log($"[CodeBlueManager] clientId={client.ClientId} playerHospital={ph.Hospital.Value}");
 
             if (ph.Hospital.Value == hospital)
             {
                 targets.Add(client.ClientId);
             }
         }
-
-        Debug.Log($"[CodeBlueManager] Targets for {hospital} = {targets.Count}");
 
         return new ClientRpcParams
         {
@@ -65,37 +129,5 @@ public class CodeBlueManager : NetworkBehaviour
                 TargetClientIds = targets.ToArray()
             }
         };
-    }
-    void SpawnPatient(ref NetworkObject currentPatient,
-                  NetworkObject prefab,
-                  Transform[] spawnPoints,
-                  HospitalType hospital)
-    {
-        // despawn the previous patient
-        if (currentPatient != null && currentPatient.IsSpawned)
-        {
-            currentPatient.Despawn(true);
-        }
-
-        // pick a random room from THIS hospital's spawn list
-        int randomIndex = Random.Range(0, spawnPoints.Length);
-        Transform spawn = spawnPoints[randomIndex];
-
-        //roomNumber comes from the chosen index, not from RoomSpawnPoint
-        int roomNumber = randomIndex + 1;
-
-        Debug.Log($"[CodeBlueManager] {hospital} chose index={randomIndex} -> spawnName={spawn.name} -> roomNumber={roomNumber}");
-
-        NetworkObject patient = Instantiate(prefab, spawn.position, spawn.rotation);
-        patient.Spawn(true);
-
-        currentPatient = patient;
-
-        // play announcement only for players in that hospital
-        if (announcementSystem != null)
-        {
-            ClientRpcParams targets = BuildTargetsForHospital(hospital);
-            announcementSystem.PlayRoomAnnouncementClientRpc(hospital, roomNumber, targets);
-        }
     }
 }
