@@ -19,12 +19,10 @@ public class PatientBehaviour : NetworkBehaviour
     // Audio
     [SerializeField] private AudioSource monitorAudio;
 
-    // Animation scripts (these should be references to the INSTANCES inside the patient setup prefab)
+    //Animation scripts
     [SerializeField] private BedAnimation bedAnim;
     [SerializeField] private ButtonAnimation buttonAnim;
-
-    // Rename this field/type if your script is called CPRAnimation instead of HandsAnimation
-    [SerializeField] private CPRAnimation handsAnim;
+    [SerializeField] private CPRAnimation cprAnim;
 
     // Networked state (server writes, clients read)
     public NetworkVariable<bool> BedLowered = new(false);
@@ -188,7 +186,7 @@ public class PatientBehaviour : NetworkBehaviour
     [ClientRpc]
     private void PlayHandsCompressionClientRpc()
     {
-        if (handsAnim != null)
-            handsAnim.PlayCompression(); // rename if your method name differs
+        if (cprAnim != null)
+            cprAnim.PlayCompress();
     }
 }

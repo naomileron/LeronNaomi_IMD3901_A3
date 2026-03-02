@@ -3,35 +3,37 @@ using UnityEngine;
 public class CPRAnimation : MonoBehaviour
 {
     [SerializeField] private Animator animator;
-    [SerializeField] private string compressTrigger = "Compress";
+    [SerializeField] private string triggerName = "Compress";
 
-    private void Reset()
-    {
-        if (animator == null) animator = GetComponentInChildren<Animator>(true);
-    }
-
-    public void PlayCompression()
+    private void Awake()
     {
         if (animator == null)
         {
-            Debug.LogError("[HandsAnimation] Animator is NULL.", this);
+            animator = GetComponent<Animator>();
+        }
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>(true);
+        }
+        if (animator == null)
+        {
+            Debug.LogError("[CPRAnimation] No Animator found.", this);
+        }
+            
+    }
+
+    public void PlayCompress()
+    {
+        if (animator == null)
+        {
             return;
         }
-
-        // If you ever run into the "goActive=False" issue again, this prevents it:
         if (!animator.gameObject.activeInHierarchy)
-        {
-            Debug.LogWarning("[HandsAnimation] Hands not active yet, skipping compression.", this);
-            return;
+        { 
+            return; 
         }
 
-        if (animator.runtimeAnimatorController == null)
-        {
-            Debug.LogError("[HandsAnimation] Animator has no controller assigned.", animator);
-            return;
-        }
-
-        animator.ResetTrigger(compressTrigger);
-        animator.SetTrigger(compressTrigger);
+        animator.ResetTrigger(triggerName);
+        animator.SetTrigger(triggerName);
     }
 }
