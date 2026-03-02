@@ -32,7 +32,10 @@ public class CrosshairBehaviour : NetworkBehaviour
     public HitType HitType { get; private set; }
     public bool InRange { get; private set; }
 
-    //private string lastState = "";
+    [SerializeField] private float raycastRate = 0.05f;
+    private float nextRaycastTime;
+
+    private bool handsShowingCpr;
 
     private void Reset()
     {
@@ -52,15 +55,24 @@ public class CrosshairBehaviour : NetworkBehaviour
             uiCanvas.enabled = IsOwner;
 
         if (IsOwner)
+        {
+            handsShowingCpr = false;
             SetHands(false); // start with normal hands
+        }
     }
 
     private void Update()
     {
         if (!IsOwner) return;
 
-        RaycastForTargets();
-        UpdateCprHandsTarget();
+        //only update targeting at a fixed rate
+        if (Time.time >= nextRaycastTime)
+        {
+            nextRaycastTime = Time.time + raycastRate;
+
+            RaycastForTargets();
+            UpdateCprHandsTarget();
+        }
 
         bool canShowCpr =
             IsAimingAtPatient() &&
@@ -68,10 +80,14 @@ public class CrosshairBehaviour : NetworkBehaviour
             CurrentPatient.BedLowered.Value &&
             !CurrentPatient.Resolved.Value;
 
-        SetHands(canShowCpr);
+        //avoid SetActive spam
+        if (canShowCpr != handsShowingCpr)
+        {
+            handsShowingCpr = canShowCpr;
+            SetHands(canShowCpr);
+        }
 
         UpdateCrosshairColour();
-        //DebugStateChanged();
     }
 
     private void RaycastForTargets()
@@ -90,17 +106,10 @@ public class CrosshairBehaviour : NetworkBehaviour
 
         InRange = true;
         CurrentCollider = hit.collider;
-
         if (CurrentCollider == null) return;
 
+        // Fast lookup (parent only)
         CurrentPatient = CurrentCollider.GetComponentInParent<PatientBehaviour>();
-
-        if (CurrentPatient == null)
-        {
-            Transform root = CurrentCollider.transform.root;
-            if (root != null)
-                CurrentPatient = root.GetComponentInChildren<PatientBehaviour>();
-        }
 
         if (CurrentPatient == null)
         {
@@ -118,8 +127,6 @@ public class CrosshairBehaviour : NetworkBehaviour
 
     private void UpdateCprHandsTarget()
     {
-        // If you are not currently looking at a patient at all,
-        // force-hide any CPR hands we previously grabbed.
         if (CurrentPatient == null)
         {
             if (currentCprHands != null)
@@ -133,14 +140,12 @@ public class CrosshairBehaviour : NetworkBehaviour
         if (CurrentPatient == lastPatient)
             return;
 
-        // hide old patient's hands
         if (currentCprHands != null)
             currentCprHands.SetActive(false);
 
         lastPatient = CurrentPatient;
         currentCprHands = CurrentPatient.GetCprHandsObject();
 
-        // IMPORTANT: always start hidden until conditions allow showing
         if (currentCprHands != null)
             currentCprHands.SetActive(false);
     }
@@ -149,35 +154,21 @@ public class CrosshairBehaviour : NetworkBehaviour
     {
         if (crosshair == null) return;
 
+        Color target;
+
         if (!InRange || HitType == HitType.None)
         {
-            crosshair.color = defaultColour;
-            return;
+            target = defaultColour;
+        }
+        else
+        {
+            bool isHost = NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost;
+            target = isHost ? hostInRangeColour : clientInRangeColour;
         }
 
-        bool isHost = NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost;
-        crosshair.color = isHost ? hostInRangeColour : clientInRangeColour;
+        if (crosshair.color != target)
+            crosshair.color = target;
     }
-
-    //private void DebugStateChanged()
-    //{
-    //    string camName = playerCamera != null ? playerCamera.name : "NULL_CAM";
-    //    string crossName = crosshair != null ? crosshair.name : "NULL_CROSS";
-    //    string hitName = CurrentCollider != null ? CurrentCollider.name : "NONE";
-    //    string hitTag = CurrentCollider != null ? CurrentCollider.tag : "NONE";
-    //    string patientName = CurrentPatient != null ? CurrentPatient.name : "NONE";
-
-    //    string state =
-    //        $"owner={IsOwner} cam={camName} cross={crossName} " +
-    //        $"inRange={InRange} hitType={HitType} hit={hitName} " +
-    //        $"tag={hitTag} patient={patientName}";
-
-    //    if (state != lastState)
-    //    {
-    //        lastState = state;
-    //        Debug.Log("[CrosshairDebug] " + state);
-    //    }
-    //}
 
     public bool IsAimingAtBedButton()
         => InRange && HitType == HitType.BedButton && CurrentPatient != null;
@@ -185,7 +176,6 @@ public class CrosshairBehaviour : NetworkBehaviour
     public bool IsAimingAtPatient()
         => InRange && HitType == HitType.Patient && CurrentPatient != null;
 
-    
     private void SetHands(bool showCpr)
     {
         if (regularHands != null)

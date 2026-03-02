@@ -14,7 +14,7 @@ public class PlayerHospital : NetworkBehaviour
     //runs when the player object spawns in the network
     public override void OnNetworkSpawn()
     {
-        Debug.Log($"[PlayerHospital] OnNetworkSpawn. IsServer={IsServer} OwnerClientId={OwnerClientId}");
+        //Debug.Log($"[PlayerHospital] OnNetworkSpawn. IsServer={IsServer} OwnerClientId={OwnerClientId}");
 
         //only the server can decide hospital assignments
         if (!IsServer)
@@ -27,7 +27,7 @@ public class PlayerHospital : NetworkBehaviour
             Hospital.Value = (OwnerClientId == NetworkManager.ServerClientId)
                 ? HospitalType.Blue
                 : HospitalType.Green;
-            Debug.Log($"[PlayerHospital] Assigned hospital {Hospital.Value} to OwnerClientId={OwnerClientId}");
+            //Debug.Log($"[PlayerHospital] Assigned hospital {Hospital.Value} to OwnerClientId={OwnerClientId}");
         }
     }
 }

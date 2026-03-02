@@ -20,6 +20,6 @@ public class MuteNonHostAudio : MonoBehaviour
         AudioListener.pause = !isHost;
         AudioListener.volume = isHost ? 1f : 0f;
 
-        Debug.Log($"[MuteNonHostAudio] IsListening={NetworkManager.Singleton.IsListening} IsHost={isHost} -> pause={AudioListener.pause}, volume={AudioListener.volume}");
+        //Debug.Log($"[MuteNonHostAudio] IsListening={NetworkManager.Singleton.IsListening} IsHost={isHost} -> pause={AudioListener.pause}, volume={AudioListener.volume}");
     }
 }

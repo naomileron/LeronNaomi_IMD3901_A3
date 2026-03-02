@@ -28,7 +28,7 @@ public class RoomVolume : NetworkBehaviour
         {
             playersInside.Add(netObj.OwnerClientId);
 
-            Debug.Log($"[RoomVolume] ENTER key=({Hospital},{RoomNumber}) clientId={netObj.OwnerClientId} insideCount={playersInside.Count} obj={other.name}"); // DEBUG
+            //Debug.Log($"[RoomVolume] ENTER key=({Hospital},{RoomNumber}) clientId={netObj.OwnerClientId} insideCount={playersInside.Count} obj={other.name}"); // DEBUG
         }
     }
 
@@ -41,11 +41,11 @@ public class RoomVolume : NetworkBehaviour
 
         if (playersInside.Remove(netObj.OwnerClientId))
         {
-            Debug.Log($"[RoomVolume] EXIT key=({Hospital},{RoomNumber}) clientId={netObj.OwnerClientId} insideCount={playersInside.Count} obj={other.name}"); // DEBUG
+            //Debug.Log($"[RoomVolume] EXIT key=({Hospital},{RoomNumber}) clientId={netObj.OwnerClientId} insideCount={playersInside.Count} obj={other.name}"); // DEBUG
 
             if (playersInside.Count == 0)
             {
-                Debug.Log($"[RoomVolume] EMPTY key=({Hospital},{RoomNumber}) firing OnRoomBecameEmptyServer"); // DEBUG
+                //Debug.Log($"[RoomVolume] EMPTY key=({Hospital},{RoomNumber}) firing OnRoomBecameEmptyServer"); // DEBUG
                 OnRoomBecameEmptyServer?.Invoke(Hospital, RoomNumber);
             }
         }

@@ -27,6 +27,9 @@ public class PatientBehaviour : NetworkBehaviour
 
     [SerializeField] private GameObject cprHandsRoot;
 
+    //which hospital this patient belongs to (set by spawner)
+    [SerializeField] private HospitalType hospital = HospitalType.Blue;
+
     // Networked state (server writes, clients read)
     public NetworkVariable<bool> BedLowered = new(false);
     public NetworkVariable<int> CompressionCount = new(0);
@@ -40,6 +43,12 @@ public class PatientBehaviour : NetworkBehaviour
     // Server timing
     private double startTimeServer;
 
+    //called by CodeBlueSpawner right after Instantiate
+    public void SetHospital(HospitalType h)
+    {
+        hospital = h;
+    }
+
     public GameObject GetCprHandsObject()
     {
         if (cprHandsRoot != null) return cprHandsRoot;
@@ -48,8 +57,6 @@ public class PatientBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log($"[Patient] OnNetworkSpawn server={IsServer} netId={NetworkObjectId}");
-
         if (cprHandsRoot != null)
             cprHandsRoot.SetActive(false);
 
@@ -61,8 +68,6 @@ public class PatientBehaviour : NetworkBehaviour
         if (IsServer)
         {
             startTimeServer = NetworkManager.Singleton.ServerTime.Time;
-
-            Debug.Log($"[Patient][SERVER] Spawned netId={NetworkObjectId}");
 
             PlayMonitorAudioClientRpc();
 
@@ -78,8 +83,6 @@ public class PatientBehaviour : NetworkBehaviour
 
         if (IsServer)
             Resolved.OnValueChanged -= OnResolvedChangedServer;
-
-        Debug.Log($"[Patient] OnDestroy netId={NetworkObjectId}");
     }
 
     private void OnBedLoweredChanged(bool oldValue, bool newValue)
@@ -95,34 +98,60 @@ public class PatientBehaviour : NetworkBehaviour
         if (!oldValue && newValue && !resolvedEventFired)
         {
             resolvedEventFired = true;
-
-            Debug.Log($"[Patient][SERVER] Resolved TRUE netId={NetworkObjectId} Saved={Saved.Value}");
-
             OnResolvedServer?.Invoke(this);
         }
     }
 
     // ---------------- AUDIO ----------------
 
+    //only play monitor if local player is in the same hospital
     [ClientRpc]
     private void PlayMonitorAudioClientRpc()
     {
-        Debug.Log($"[Patient] Monitor START netId={NetworkObjectId}");
+        if (monitorAudio == null) return;
 
-        if (monitorAudio != null)
+        // Find the local player's hospital (owner player object)
+        var players = FindObjectsByType<PlayerHospital>(FindObjectsSortMode.None);
+        for (int i = 0; i < players.Length; i++)
         {
-            monitorAudio.Stop();
-            monitorAudio.Play();
+            var ph = players[i];
+            if (ph == null) continue;
+
+            // Only care about THIS client's player
+            if (!ph.IsOwner) continue;
+
+            // If different hospital, do nothing (prevents tons of monitors)
+            if (ph.Hospital.Value != hospital)
+                return;
+
+            break;
         }
+
+        monitorAudio.Stop();
+        monitorAudio.Play();
     }
 
+    //only stop if eligible to play on this client
     [ClientRpc]
     private void StopMonitorAudioClientRpc()
     {
-        Debug.Log($"[Patient] Monitor STOP netId={NetworkObjectId}");
+        if (monitorAudio == null) return;
 
-        if (monitorAudio != null)
-            monitorAudio.Stop();
+        var players = FindObjectsByType<PlayerHospital>(FindObjectsSortMode.None);
+        for (int i = 0; i < players.Length; i++)
+        {
+            var ph = players[i];
+            if (ph == null) continue;
+
+            if (!ph.IsOwner) continue;
+
+            if (ph.Hospital.Value != hospital)
+                return;
+
+            break;
+        }
+
+        monitorAudio.Stop();
     }
 
     // ---------------- SERVER UPDATE ----------------
@@ -132,13 +161,10 @@ public class PatientBehaviour : NetworkBehaviour
         if (!IsServer) return;
         if (Resolved.Value) return;
 
-        double elapsed =
-            NetworkManager.Singleton.ServerTime.Time - startTimeServer;
+        double elapsed = NetworkManager.Singleton.ServerTime.Time - startTimeServer;
 
         if (elapsed >= flatlineTimeSeconds)
         {
-            Debug.Log($"[Patient][SERVER] FLATLINE netId={NetworkObjectId}");
-
             Saved.Value = false;
             Resolved.Value = true;
 
@@ -186,8 +212,6 @@ public class PatientBehaviour : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void LowerBedServerRpc(ServerRpcParams rpcParams = default)
     {
-        Debug.Log($"[Patient][SERVER] LowerBed netId={NetworkObjectId}");
-
         PlayBedButtonPressClientRpc();
 
         if (Resolved.Value) return;
@@ -221,14 +245,11 @@ public class PatientBehaviour : NetworkBehaviour
         if (Resolved.Value) return;
         if (!BedLowered.Value) return;
 
-        Debug.Log($"[Patient][SERVER] Compression netId={NetworkObjectId}");
-
         if (minSecondsBetweenCompressions > 0f)
         {
             double now = NetworkManager.Singleton.ServerTime.Time;
 
-            if (now - lastCompressionTimeServer <
-                minSecondsBetweenCompressions)
+            if (now - lastCompressionTimeServer < minSecondsBetweenCompressions)
                 return;
 
             lastCompressionTimeServer = now;
@@ -239,12 +260,8 @@ public class PatientBehaviour : NetworkBehaviour
         int newCount = CompressionCount.Value + 1;
         CompressionCount.Value = newCount;
 
-        Debug.Log($"[Patient][SERVER] CompressionCount {newCount}/{compressionsToSave}");
-
         if (newCount >= compressionsToSave)
         {
-            Debug.Log($"[Patient][SERVER] SAVED netId={NetworkObjectId}");
-
             Saved.Value = true;
             Resolved.Value = true;
 

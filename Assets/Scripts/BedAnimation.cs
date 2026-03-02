@@ -15,14 +15,14 @@ public class BedAnimation : MonoBehaviour
         if (animator == null)
             animator = GetComponentInChildren<Animator>(true);
 
-        Debug.Log($"[BedAnimation] Awake on {name} -> animatorGO={(animator ? animator.gameObject.name : "NULL")} controller={(animator && animator.runtimeAnimatorController ? animator.runtimeAnimatorController.name : "NONE")}", this);
+        //Debug.Log($"[BedAnimation] Awake on {name} -> animatorGO={(animator ? animator.gameObject.name : "NULL")} controller={(animator && animator.runtimeAnimatorController ? animator.runtimeAnimatorController.name : "NONE")}", this);
     }
 
     public void SetLowered(bool lowered)
     {
         if (animator == null)
         {
-            Debug.LogError("[BedAnimation] Animator is NULL.", this);
+            //Debug.LogError("[BedAnimation] Animator is NULL.", this);
             return;
         }
 
@@ -32,7 +32,7 @@ public class BedAnimation : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[BedAnimation] SetLowered({lowered})", this);
+        //Debug.Log($"[BedAnimation] SetLowered({lowered})", this);
         animator.SetBool(loweredBool, lowered);
 
     }
@@ -49,6 +49,6 @@ public class BedAnimation : MonoBehaviour
             yield return null;
         }
 
-        Debug.LogWarning("[BedAnimation] Never became active in time, lowered state skipped.", this);
+        //Debug.LogWarning("[BedAnimation] Never became active in time, lowered state skipped.", this);
     }
 }

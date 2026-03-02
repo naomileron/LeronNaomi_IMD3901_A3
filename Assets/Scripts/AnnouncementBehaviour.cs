@@ -59,7 +59,7 @@ public class AnnouncementSystem : NetworkBehaviour
     [ClientRpc]
     public void PlayRoomAnnouncementClientRpc(HospitalType hospital, int roomNumber, ClientRpcParams rpcParams = default)
     {
-        Debug.Log($"[ClientRpc] Received announcement: {hospital} Room {roomNumber}");
+        //Debug.Log($"[ClientRpc] Received announcement: {hospital} Room {roomNumber}");
 
         //Know which hospital the player belongs to
         if (localPlayerHospital == null)
@@ -69,20 +69,20 @@ public class AnnouncementSystem : NetworkBehaviour
 
         if (localPlayerHospital == null)
         {
-            Debug.LogWarning("[AnnouncementSystem] localPlayerHospital is STILL null (can’t check hospital yet).");
+            //Debug.LogWarning("[AnnouncementSystem] localPlayerHospital is STILL null (can’t check hospital yet).");
             return;
         }
         else
         {
-            Debug.Log($"[AnnouncementSystem] Local player hospital = {localPlayerHospital.Hospital.Value}");
+            //Debug.Log($"[AnnouncementSystem] Local player hospital = {localPlayerHospital.Hospital.Value}");
         }
 
-        Debug.Log($"[AnnouncementSystem] Comparing local={localPlayerHospital.Hospital.Value} vs announcement={hospital}");
+        //Debug.Log($"[AnnouncementSystem] Comparing local={localPlayerHospital.Hospital.Value} vs announcement={hospital}");
 
         //Only play the sound if it matches that player's hospital (prevents other players from hearing other hospital's announcements)
         if (localPlayerHospital.Hospital.Value != hospital)
         {
-            Debug.Log("[AnnouncementSystem] Not this player's hospital — ignoring announcement.");
+            //Debug.Log("[AnnouncementSystem] Not this player's hospital — ignoring announcement.");
             return;
         }
 
@@ -91,11 +91,11 @@ public class AnnouncementSystem : NetworkBehaviour
 
         if (index < 0 || index >= 6)
         {
-            Debug.LogWarning("[AnnouncementSystem] Room index out of range.");
+            //Debug.LogWarning("[AnnouncementSystem] Room index out of range.");
             return;
         }
 
-        Debug.Log($"[AnnouncementSystem] LocalClientId={NetworkManager.Singleton.LocalClientId}, Focused={Application.isFocused}");
+        //Debug.Log($"[AnnouncementSystem] LocalClientId={NetworkManager.Singleton.LocalClientId}, Focused={Application.isFocused}");
 
         //Select the desired hospital audio array
         AudioClip clip =
@@ -103,9 +103,9 @@ public class AnnouncementSystem : NetworkBehaviour
             ? hOneRoomClips[index]
             : hTwoRoomClips[index];
 
-        Debug.Log($"[AnnouncementSystem] Using {(hospital == HospitalType.Blue ? "hOneRoomClips (Hospital One)" : "hTwoRoomClips (Hospital Two)")}");
+        //Debug.Log($"[AnnouncementSystem] Using {(hospital == HospitalType.Blue ? "hOneRoomClips (Hospital One)" : "hTwoRoomClips (Hospital Two)")}");
 
-        Debug.Log($"[AnnouncementSystem] Selected clip = {(clip != null ? clip.name : "NULL")}");
+        //Debug.Log($"[AnnouncementSystem] Selected clip = {(clip != null ? clip.name : "NULL")}");
 
         //if clip does not exist, return
         if (clip == null)
@@ -113,7 +113,7 @@ public class AnnouncementSystem : NetworkBehaviour
             return;
         }
 
-        Debug.Log($"[AnnouncementSystem] Playing clip. sourceNull={source == null} volume={(source != null ? source.volume : 0f)}");
+        //Debug.Log($"[AnnouncementSystem] Playing clip. sourceNull={source == null} volume={(source != null ? source.volume : 0f)}");
 
         //if (muteIfNotFocused && !Application.isFocused)
         //return;

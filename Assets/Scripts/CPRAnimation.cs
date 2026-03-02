@@ -17,7 +17,7 @@ public class CPRAnimation : MonoBehaviour
         }
         if (animator == null)
         {
-            Debug.LogError("[CPRAnimation] No Animator found.", this);
+            //Debug.LogError("[CPRAnimation] No Animator found.", this);
         }
             
     }

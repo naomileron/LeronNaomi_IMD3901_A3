@@ -35,24 +35,24 @@ public class ButtonAnimation : MonoBehaviour
 
     public void PlayPress()
     {
-        Debug.Log("[ButtonAnimation] PlayPress called", this);
+        //Debug.Log("[ButtonAnimation] PlayPress called", this);
 
         if (animator == null)
         {
-            Debug.LogError("[ButtonAnimation] Animator is NULL.", this);
+            //Debug.LogError("[ButtonAnimation] Animator is NULL.", this);
             return;
         }
 
-        Debug.Log($"[ButtonAnimation] AnimatorGO={animator.gameObject.name} activeInHierarchy={animator.gameObject.activeInHierarchy} enabled={animator.enabled}", animator);
-        Debug.Log($"[ButtonAnimation] Controller={(animator.runtimeAnimatorController ? animator.runtimeAnimatorController.name : "NONE")}", animator);
+        //Debug.Log($"[ButtonAnimation] AnimatorGO={animator.gameObject.name} activeInHierarchy={animator.gameObject.activeInHierarchy} enabled={animator.enabled}", animator);
+        //Debug.Log($"[ButtonAnimation] Controller={(animator.runtimeAnimatorController ? animator.runtimeAnimatorController.name : "NONE")}", animator);
 
-        Debug.Log("[ButtonAnimation] Animator parameters:", animator);
+        //Debug.Log("[ButtonAnimation] Animator parameters:", animator);
         foreach (var p in animator.parameters)
             Debug.Log($"    param: {p.name} ({p.type})", animator);
 
         if (!animator.gameObject.activeInHierarchy)
         {
-            Debug.LogWarning("[ButtonAnimation] Animator GameObject is inactive, cannot play.", animator);
+            //Debug.LogWarning("[ButtonAnimation] Animator GameObject is inactive, cannot play.", animator);
             return;
         }
 
