@@ -1,45 +1,35 @@
-//using UnityEngine;
-//using UnityEngine.InputSystem;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
-//public class PlayerInteraction : MonoBehaviour
-//{
+public class PlayerInteraction : NetworkBehaviour
+{
+    [SerializeField] private CrosshairBehaviour targeting;
 
-//    public float interactRange = 5f;
-//    public Camera playerCamera;
-//    public CrosshairUI crosshairUIScript;
+    private void Reset()
+    {
+        if (targeting == null)
+            targeting = GetComponent<CrosshairBehaviour>();
+    }
 
-//    // Start is called once before the first execution of Update after the MonoBehaviour is created
-//    void Start()
-//    {
-        
-//    }
+    private void Update()
+    {
+        if (!IsOwner) return;
+        if (targeting == null) return;
 
-//    // Update is called once per frame
-//    void Update()
-//    {
-       
-//        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-//        RaycastHit hit;
+        // No keyboard available (rare, but safe)
+        if (Keyboard.current == null) return;
 
-//        if(Physics.Raycast(ray, out hit, interactRange))
-//        {
-//            if(hit.collider.CompareTag("Interactable"))
-//            {
-//                crosshairUIScript.SetInteract(true);
+        // Press E to lower bed (only if aiming at bed button)
+        if (Keyboard.current.eKey.wasPressedThisFrame && targeting.IsAimingAtBedButton())
+        {
+            targeting.CurrentPatient.LowerBedServerRpc();
+        }
 
-//                if(Keyboard.current.eKey.wasPressedThisFrame)
-//                {
-//                    Button button = hit.collider.GetComponent<Button>();
-//                    button.Press();
-
-//                }
-
-//                return;
-//            }
-//        }
-
-//        crosshairUIScript.SetInteract(false);
-
-
-//    }
-//}
+        // Press Space to perform one compression (only if aiming at patient)
+        if (Keyboard.current.spaceKey.wasPressedThisFrame && targeting.IsAimingAtPatient())
+        {
+            targeting.CurrentPatient.CompressionServerRpc();
+        }
+    }
+}

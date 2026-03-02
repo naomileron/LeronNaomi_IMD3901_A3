@@ -58,7 +58,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: b1c2a9b31cbf3f24b8f63a180f3385d0, type: 2}
     - target: {fileID: 919132149155446097, guid: ea409d3e68df1c84ea273c41108dd236, type: 3}
       propertyPath: m_Name
-      value: hospitalBed (1)
+      value: green_hospitalBed
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ea409d3e68df1c84ea273c41108dd236, type: 3}
+      propertyPath: m_TagString
+      value: patient
       objectReference: {fileID: 0}
     - target: {fileID: 8980632463047160621, guid: ea409d3e68df1c84ea273c41108dd236, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -67,5 +71,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ea409d3e68df1c84ea273c41108dd236, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2636737368976701187}
   m_SourcePrefab: {fileID: 100100000, guid: ea409d3e68df1c84ea273c41108dd236, type: 3}
+--- !u!1 &1912430752781643187 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ea409d3e68df1c84ea273c41108dd236, type: 3}
+  m_PrefabInstance: {fileID: 1606439758544244962}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &2636737368976701187
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1912430752781643187}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9010651, y: 0.20180774, z: 0.89762115}
+  m_Center: {x: -0.02838862, y: 1.1503597, z: -0.051189423}
