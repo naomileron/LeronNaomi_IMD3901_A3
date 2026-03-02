@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -19,43 +20,66 @@ public class PatientBehaviour : NetworkBehaviour
     // Audio
     [SerializeField] private AudioSource monitorAudio;
 
-    //Animation scripts
+    // Animation scripts
     [SerializeField] private BedAnimation bedAnim;
     [SerializeField] private ButtonAnimation buttonAnim;
     [SerializeField] private CPRAnimation cprAnim;
 
+    [SerializeField] private GameObject cprHandsRoot;
+
     // Networked state (server writes, clients read)
     public NetworkVariable<bool> BedLowered = new(false);
     public NetworkVariable<int> CompressionCount = new(0);
-    public NetworkVariable<bool> Resolved = new(false); // saved or dead
+    public NetworkVariable<bool> Resolved = new(false);
     public NetworkVariable<bool> Saved = new(false);
 
-    // Server-only timing
+    // Server-only resolved event
+    public event Action<PatientBehaviour> OnResolvedServer;
+    private bool resolvedEventFired = false;
+
+    // Server timing
     private double startTimeServer;
+
+    public GameObject GetCprHandsObject()
+    {
+        if (cprHandsRoot != null) return cprHandsRoot;
+        return cprAnim != null ? cprAnim.gameObject : null;
+    }
 
     public override void OnNetworkSpawn()
     {
-        // Apply current bed state immediately for this client
+        Debug.Log($"[Patient] OnNetworkSpawn server={IsServer} netId={NetworkObjectId}");
+
+        if (cprHandsRoot != null)
+            cprHandsRoot.SetActive(false);
+
         if (bedAnim != null)
             bedAnim.SetLowered(BedLowered.Value);
 
-        // Subscribe to changes so bed updates on all clients
         BedLowered.OnValueChanged += OnBedLoweredChanged;
 
         if (IsServer)
         {
-            // Start timer immediately when patient spawns
             startTimeServer = NetworkManager.Singleton.ServerTime.Time;
 
-            // Play monitor audio on all players at the same time
+            Debug.Log($"[Patient][SERVER] Spawned netId={NetworkObjectId}");
+
             PlayMonitorAudioClientRpc();
+
+            Resolved.OnValueChanged += OnResolvedChangedServer;
         }
     }
 
     public override void OnDestroy()
     {
         base.OnDestroy();
+
         BedLowered.OnValueChanged -= OnBedLoweredChanged;
+
+        if (IsServer)
+            Resolved.OnValueChanged -= OnResolvedChangedServer;
+
+        Debug.Log($"[Patient] OnDestroy netId={NetworkObjectId}");
     }
 
     private void OnBedLoweredChanged(bool oldValue, bool newValue)
@@ -64,9 +88,27 @@ public class PatientBehaviour : NetworkBehaviour
             bedAnim.SetLowered(newValue);
     }
 
+    private void OnResolvedChangedServer(bool oldValue, bool newValue)
+    {
+        if (!IsServer) return;
+
+        if (!oldValue && newValue && !resolvedEventFired)
+        {
+            resolvedEventFired = true;
+
+            Debug.Log($"[Patient][SERVER] Resolved TRUE netId={NetworkObjectId} Saved={Saved.Value}");
+
+            OnResolvedServer?.Invoke(this);
+        }
+    }
+
+    // ---------------- AUDIO ----------------
+
     [ClientRpc]
     private void PlayMonitorAudioClientRpc()
     {
+        Debug.Log($"[Patient] Monitor START netId={NetworkObjectId}");
+
         if (monitorAudio != null)
         {
             monitorAudio.Stop();
@@ -74,35 +116,56 @@ public class PatientBehaviour : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    private void StopMonitorAudioClientRpc()
+    {
+        Debug.Log($"[Patient] Monitor STOP netId={NetworkObjectId}");
+
+        if (monitorAudio != null)
+            monitorAudio.Stop();
+    }
+
+    // ---------------- SERVER UPDATE ----------------
+
     private void Update()
     {
         if (!IsServer) return;
         if (Resolved.Value) return;
 
-        // Check if patient is alive based on server time
-        double elapsed = NetworkManager.Singleton.ServerTime.Time - startTimeServer;
+        double elapsed =
+            NetworkManager.Singleton.ServerTime.Time - startTimeServer;
+
         if (elapsed >= flatlineTimeSeconds)
         {
-            Resolved.Value = true;
+            Debug.Log($"[Patient][SERVER] FLATLINE netId={NetworkObjectId}");
+
             Saved.Value = false;
+            Resolved.Value = true;
+
+            StopMonitorAudioClientRpc();
             OnResolvedClientRpc(false);
         }
     }
 
-    // Called by server when resolved (saved/dead) to let clients update visuals
+    // ---------------- CLIENT FEEDBACK ----------------
+
     [ClientRpc]
     private void OnResolvedClientRpc(bool saved)
     {
-        Debug.Log(saved ? "[Patient] Saved!" : "[Patient] Died (flatline).");
-        // TODO later: play saved/dead animations, change monitor visuals, etc.
+        Debug.Log(saved
+            ? $"[Patient] Saved! netId={NetworkObjectId}"
+            : $"[Patient] Died (flatline) netId={NetworkObjectId}");
     }
+
+    // ---------------- HIT TESTING ----------------
 
     public bool IsBedButton(Collider hit)
     {
         if (hit == null) return false;
 
         if (bedButtonCollider != null)
-            return hit == bedButtonCollider || hit.transform.IsChildOf(bedButtonCollider.transform);
+            return hit == bedButtonCollider ||
+                   hit.transform.IsChildOf(bedButtonCollider.transform);
 
         return hit.CompareTag("bedButton");
     }
@@ -112,16 +175,18 @@ public class PatientBehaviour : NetworkBehaviour
         if (hit == null) return false;
 
         if (patientCollider != null)
-            return hit == patientCollider || hit.transform.IsChildOf(patientCollider.transform);
+            return hit == patientCollider ||
+                   hit.transform.IsChildOf(patientCollider.transform);
 
         return hit.CompareTag("patient");
     }
 
-    // Actions from players (server-side)
+    // ---------------- BED LOWER ----------------
+
     [ServerRpc(RequireOwnership = false)]
     public void LowerBedServerRpc(ServerRpcParams rpcParams = default)
     {
-        Debug.Log($"[Patient] LowerBedServerRpc fired. BedLowered(before)={BedLowered.Value}");
+        Debug.Log($"[Patient][SERVER] LowerBed netId={NetworkObjectId}");
 
         PlayBedButtonPressClientRpc();
 
@@ -130,9 +195,6 @@ public class PatientBehaviour : NetworkBehaviour
         if (!BedLowered.Value)
         {
             BedLowered.Value = true;
-            Debug.Log($"[Patient] BedLowered set TRUE. BedLowered(after)={BedLowered.Value}");
-
-            // tell everyone to animate now
             PlayBedLowerClientRpc(true);
         }
     }
@@ -151,34 +213,42 @@ public class PatientBehaviour : NetworkBehaviour
             buttonAnim.PlayPress();
     }
 
+    // ---------------- CPR ----------------
+
     [ServerRpc(RequireOwnership = false)]
     public void CompressionServerRpc(ServerRpcParams rpcParams = default)
     {
         if (Resolved.Value) return;
-
-        // Bed must be lowered before compressions are valid
         if (!BedLowered.Value) return;
 
-        // Optional anti-spam / rhythm pacing
+        Debug.Log($"[Patient][SERVER] Compression netId={NetworkObjectId}");
+
         if (minSecondsBetweenCompressions > 0f)
         {
             double now = NetworkManager.Singleton.ServerTime.Time;
-            if (now - lastCompressionTimeServer < minSecondsBetweenCompressions)
+
+            if (now - lastCompressionTimeServer <
+                minSecondsBetweenCompressions)
                 return;
 
             lastCompressionTimeServer = now;
         }
 
-        // Play hands compression animation (event)
         PlayHandsCompressionClientRpc();
 
         int newCount = CompressionCount.Value + 1;
         CompressionCount.Value = newCount;
 
+        Debug.Log($"[Patient][SERVER] CompressionCount {newCount}/{compressionsToSave}");
+
         if (newCount >= compressionsToSave)
         {
-            Resolved.Value = true;
+            Debug.Log($"[Patient][SERVER] SAVED netId={NetworkObjectId}");
+
             Saved.Value = true;
+            Resolved.Value = true;
+
+            StopMonitorAudioClientRpc();
             OnResolvedClientRpc(true);
         }
     }

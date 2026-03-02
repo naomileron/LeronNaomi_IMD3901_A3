@@ -117,6 +117,7 @@ MonoBehaviour:
   bedAnim: {fileID: 2286850727155429073}
   buttonAnim: {fileID: 5463565129757832357}
   cprAnim: {fileID: 121558546205690204}
+  cprHandsRoot: {fileID: 2765020123510004981}
   BedLowered:
     m_InternalValue: 0
   CompressionCount:

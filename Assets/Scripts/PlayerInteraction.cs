@@ -14,11 +14,11 @@ public class PlayerInteraction : NetworkBehaviour
 
     private void Update()
     {
-        if (Time.frameCount % 120 == 0)
-            Debug.Log($"[PlayerInteraction] Update running. IsOwner={IsOwner}", this);
+        //if (Time.frameCount % 120 == 0)
+        //    Debug.Log($"[PlayerInteraction] Update running. IsOwner={IsOwner}", this);
 
         if (!IsOwner) return;
-        Debug.Log($"[PlayerInteraction] targeting={(targeting ? "OK" : "NULL")}", this);
+        //Debug.Log($"[PlayerInteraction] targeting={(targeting ? "OK" : "NULL")}", this);
         if (targeting == null) return;
 
         // No keyboard available (rare, but safe)
@@ -27,7 +27,7 @@ public class PlayerInteraction : NetworkBehaviour
         // Press E to lower bed (only if aiming at bed button)
         if (Keyboard.current.eKey.wasPressedThisFrame && targeting.IsAimingAtBedButton())
         {
-            Debug.Log("[PlayerInteraction] E pressed while aiming at bed button");
+            //Debug.Log("[PlayerInteraction] E pressed while aiming at bed button");
             targeting.CurrentPatient.LowerBedServerRpc();
         }
 

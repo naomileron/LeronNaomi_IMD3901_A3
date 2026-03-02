@@ -22,12 +22,17 @@ public class CrosshairBehaviour : NetworkBehaviour
     [SerializeField] private Color hostInRangeColour = Color.blue;
     [SerializeField] private Color clientInRangeColour = Color.green;
 
+    [SerializeField] private GameObject regularHands;
+
+    private GameObject currentCprHands;
+    private PatientBehaviour lastPatient;
+
     public PatientBehaviour CurrentPatient { get; private set; }
     public Collider CurrentCollider { get; private set; }
     public HitType HitType { get; private set; }
     public bool InRange { get; private set; }
 
-    private string lastState = "";
+    //private string lastState = "";
 
     private void Reset()
     {
@@ -43,9 +48,11 @@ public class CrosshairBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // Only show UI for the owning player
         if (uiCanvas != null)
             uiCanvas.enabled = IsOwner;
+
+        if (IsOwner)
+            SetHands(false); // start with normal hands
     }
 
     private void Update()
@@ -53,8 +60,18 @@ public class CrosshairBehaviour : NetworkBehaviour
         if (!IsOwner) return;
 
         RaycastForTargets();
+        UpdateCprHandsTarget();
+
+        bool canShowCpr =
+            IsAimingAtPatient() &&
+            CurrentPatient != null &&
+            CurrentPatient.BedLowered.Value &&
+            !CurrentPatient.Resolved.Value;
+
+        SetHands(canShowCpr);
+
         UpdateCrosshairColour();
-        DebugStateChanged();
+        //DebugStateChanged();
     }
 
     private void RaycastForTargets()
@@ -66,17 +83,9 @@ public class CrosshairBehaviour : NetworkBehaviour
 
         if (playerCamera == null) return;
 
-        Ray ray = new Ray(
-            playerCamera.transform.position,
-            playerCamera.transform.forward
-        );
+        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
 
-        if (!Physics.Raycast(
-                ray,
-                out RaycastHit hit,
-                interactDistance,
-                interactMask,
-                QueryTriggerInteraction.Ignore))
+        if (!Physics.Raycast(ray, out RaycastHit hit, interactDistance, interactMask, QueryTriggerInteraction.Ignore))
             return;
 
         InRange = true;
@@ -84,10 +93,8 @@ public class CrosshairBehaviour : NetworkBehaviour
 
         if (CurrentCollider == null) return;
 
-        // --- Patient lookup (supports nested prefabs) ---
         CurrentPatient = CurrentCollider.GetComponentInParent<PatientBehaviour>();
 
-        // fallback if deeply nested
         if (CurrentPatient == null)
         {
             Transform root = CurrentCollider.transform.root;
@@ -101,21 +108,41 @@ public class CrosshairBehaviour : NetworkBehaviour
             return;
         }
 
-        // Determine interaction type
-        if (CurrentPatient.IsBedButton(CurrentCollider)
-            || CurrentCollider.CompareTag("bedButton"))
-        {
+        if (CurrentPatient.IsBedButton(CurrentCollider) || CurrentCollider.CompareTag("bedButton"))
             HitType = HitType.BedButton;
-        }
-        else if (CurrentPatient.IsPatient(CurrentCollider)
-            || CurrentCollider.CompareTag("patient"))
-        {
+        else if (CurrentPatient.IsPatient(CurrentCollider) || CurrentCollider.CompareTag("patient"))
             HitType = HitType.Patient;
-        }
         else
-        {
             HitType = HitType.None;
+    }
+
+    private void UpdateCprHandsTarget()
+    {
+        // If you are not currently looking at a patient at all,
+        // force-hide any CPR hands we previously grabbed.
+        if (CurrentPatient == null)
+        {
+            if (currentCprHands != null)
+                currentCprHands.SetActive(false);
+
+            lastPatient = null;
+            currentCprHands = null;
+            return;
         }
+
+        if (CurrentPatient == lastPatient)
+            return;
+
+        // hide old patient's hands
+        if (currentCprHands != null)
+            currentCprHands.SetActive(false);
+
+        lastPatient = CurrentPatient;
+        currentCprHands = CurrentPatient.GetCprHandsObject();
+
+        // IMPORTANT: always start hidden until conditions allow showing
+        if (currentCprHands != null)
+            currentCprHands.SetActive(false);
     }
 
     private void UpdateCrosshairColour()
@@ -128,38 +155,43 @@ public class CrosshairBehaviour : NetworkBehaviour
             return;
         }
 
-        bool isHost =
-            NetworkManager.Singleton != null &&
-            NetworkManager.Singleton.IsHost;
-
-        crosshair.color = isHost
-            ? hostInRangeColour
-            : clientInRangeColour;
+        bool isHost = NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost;
+        crosshair.color = isHost ? hostInRangeColour : clientInRangeColour;
     }
 
-    private void DebugStateChanged()
-    {
-        string camName = playerCamera != null ? playerCamera.name : "NULL_CAM";
-        string crossName = crosshair != null ? crosshair.name : "NULL_CROSS";
-        string hitName = CurrentCollider != null ? CurrentCollider.name : "NONE";
-        string hitTag = CurrentCollider != null ? CurrentCollider.tag : "NONE";
-        string patientName = CurrentPatient != null ? CurrentPatient.name : "NONE";
+    //private void DebugStateChanged()
+    //{
+    //    string camName = playerCamera != null ? playerCamera.name : "NULL_CAM";
+    //    string crossName = crosshair != null ? crosshair.name : "NULL_CROSS";
+    //    string hitName = CurrentCollider != null ? CurrentCollider.name : "NONE";
+    //    string hitTag = CurrentCollider != null ? CurrentCollider.tag : "NONE";
+    //    string patientName = CurrentPatient != null ? CurrentPatient.name : "NONE";
 
-        string state =
-            $"owner={IsOwner} cam={camName} cross={crossName} " +
-            $"inRange={InRange} hitType={HitType} hit={hitName} " +
-            $"tag={hitTag} patient={patientName}";
+    //    string state =
+    //        $"owner={IsOwner} cam={camName} cross={crossName} " +
+    //        $"inRange={InRange} hitType={HitType} hit={hitName} " +
+    //        $"tag={hitTag} patient={patientName}";
 
-        if (state != lastState)
-        {
-            lastState = state;
-            Debug.Log("[CrosshairDebug] " + state);
-        }
-    }
+    //    if (state != lastState)
+    //    {
+    //        lastState = state;
+    //        Debug.Log("[CrosshairDebug] " + state);
+    //    }
+    //}
 
     public bool IsAimingAtBedButton()
         => InRange && HitType == HitType.BedButton && CurrentPatient != null;
 
     public bool IsAimingAtPatient()
         => InRange && HitType == HitType.Patient && CurrentPatient != null;
+
+    
+    private void SetHands(bool showCpr)
+    {
+        if (regularHands != null)
+            regularHands.SetActive(!showCpr);
+
+        if (currentCprHands != null)
+            currentCprHands.SetActive(showCpr);
+    }
 }
