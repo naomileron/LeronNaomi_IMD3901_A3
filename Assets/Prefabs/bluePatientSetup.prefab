@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 7215131332684191867}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1.593, y: -1.733, z: 1.733}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -116,7 +116,7 @@ MonoBehaviour:
   monitorAudio: {fileID: -5470905604112262498}
   bedAnim: {fileID: 5162713828586738709}
   buttonAnim: {fileID: 6267182413593811022}
-  cprAnim: {fileID: 5264139768486705763}
+  cprAnim: {fileID: 1046753398218946020}
   BedLowered:
     m_InternalValue: 0
   CompressionCount:
@@ -371,15 +371,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.591
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.705
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
       propertyPath: m_LocalRotation.w
@@ -423,10 +423,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2588653501803648094}
+      addedObject: {fileID: 8055650360376147821}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5264139768486705763}
+      addedObject: {fileID: 1046753398218946020}
   m_SourcePrefab: {fileID: 100100000, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
 --- !u!4 &6192676962774910047 stripped
 Transform:
@@ -438,7 +438,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 605f18889c2cbcf48bdf5e4efac7c944, type: 3}
   m_PrefabInstance: {fileID: 5943194180104545204}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &2588653501803648094
+--- !u!95 &8055650360376147821
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
@@ -460,7 +460,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5264139768486705763
+--- !u!114 &1046753398218946020
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -472,7 +472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26fd574f0ab78dc49b93740679b47781, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 2588653501803648094}
+  animator: {fileID: 8055650360376147821}
   triggerName: Compress
 --- !u!1001 &6017289033074409581
 PrefabInstance:
