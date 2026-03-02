@@ -6,18 +6,53 @@ public class ButtonAnimation : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private string pressTrigger = "Press";
 
+    //public void PlayPress()
+    //{
+    //    if (animator == null)
+    //    {
+    //        Debug.LogError("[ButtonAnimation] Animator is NULL.", this);
+    //        return;
+    //    }
+
+    //    // If object isn't active yet, wait and try again
+    //    if (!animator.gameObject.activeInHierarchy)
+    //    {
+    //        StartCoroutine(PlayWhenActive());
+    //        return;
+    //    }
+
+    //    animator.ResetTrigger(pressTrigger);
+    //    animator.SetTrigger(pressTrigger);
+    //}
+    private void Awake()
+    {
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>(true);
+    }
+
     public void PlayPress()
     {
+        Debug.Log("[ButtonAnimation] PlayPress called", this);
+
         if (animator == null)
         {
             Debug.LogError("[ButtonAnimation] Animator is NULL.", this);
             return;
         }
 
-        // If object isn't active yet, wait and try again
+        Debug.Log($"[ButtonAnimation] AnimatorGO={animator.gameObject.name} activeInHierarchy={animator.gameObject.activeInHierarchy} enabled={animator.enabled}", animator);
+        Debug.Log($"[ButtonAnimation] Controller={(animator.runtimeAnimatorController ? animator.runtimeAnimatorController.name : "NONE")}", animator);
+
+        Debug.Log("[ButtonAnimation] Animator parameters:", animator);
+        foreach (var p in animator.parameters)
+            Debug.Log($"    param: {p.name} ({p.type})", animator);
+
         if (!animator.gameObject.activeInHierarchy)
         {
-            StartCoroutine(PlayWhenActive());
+            Debug.LogWarning("[ButtonAnimation] Animator GameObject is inactive, cannot play.", animator);
             return;
         }
 

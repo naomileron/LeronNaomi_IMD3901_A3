@@ -261,10 +261,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 6726462803269688427}
     m_Modifications:
     - target: {fileID: 1176639925053229286, guid: b5eaf8135e18f3449876538b1ea57e53, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.75075656
-      objectReference: {fileID: 0}
-    - target: {fileID: 1176639925053229286, guid: b5eaf8135e18f3449876538b1ea57e53, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -307,6 +303,10 @@ PrefabInstance:
     - target: {fileID: 1954442853285843548, guid: b5eaf8135e18f3449876538b1ea57e53, type: 3}
       propertyPath: m_Name
       value: blue_Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 7528434253345024952, guid: b5eaf8135e18f3449876538b1ea57e53, type: 3}
+      propertyPath: animator
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -403,6 +403,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6726462803269688427}
     m_Modifications:
+    - target: {fileID: -7772068772543081352, guid: 32b41525bcfcbe3418e27b413418596b, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3702206674022063634, guid: 32b41525bcfcbe3418e27b413418596b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.5615692

@@ -123,17 +123,27 @@ public class PatientBehaviour : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void LowerBedServerRpc(ServerRpcParams rpcParams = default)
     {
-        if (Resolved.Value) return;
+        Debug.Log($"[Patient] LowerBedServerRpc fired. BedLowered(before)={BedLowered.Value}");
 
-        // Always play button press animation (event)
         PlayBedButtonPressClientRpc();
 
-        // Only lower once (persistent)
+        if (Resolved.Value) return;
+
         if (!BedLowered.Value)
         {
             BedLowered.Value = true;
-            Debug.Log("[Patient] Bed lowered.");
+            Debug.Log($"[Patient] BedLowered set TRUE. BedLowered(after)={BedLowered.Value}");
+
+            // tell everyone to animate now
+            PlayBedLowerClientRpc(true);
         }
+    }
+
+    [ClientRpc]
+    private void PlayBedLowerClientRpc(bool lowered)
+    {
+        if (bedAnim != null)
+            bedAnim.SetLowered(lowered);
     }
 
     [ClientRpc]
