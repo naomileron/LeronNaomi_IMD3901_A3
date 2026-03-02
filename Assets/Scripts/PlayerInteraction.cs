@@ -1,35 +1,45 @@
-using Unity.Netcode;
-using UnityEngine;
-using UnityEngine.InputSystem;
+//using UnityEngine;
+//using UnityEngine.InputSystem;
 
-public class PlayerInteraction : NetworkBehaviour
-{
-    [SerializeField] private CrosshairBehaviour targeting;
+//public class PlayerInteraction : MonoBehaviour
+//{
 
-    private void Reset()
-    {
-        if (targeting == null)
-            targeting = GetComponent<CrosshairBehaviour>();
-    }
+//    public float interactRange = 5f;
+//    public Camera playerCamera;
+//    public CrosshairUI crosshairUIScript;
 
-    private void Update()
-    {
-        if (!IsOwner) return;
-        if (targeting == null) return;
+//    // Start is called once before the first execution of Update after the MonoBehaviour is created
+//    void Start()
+//    {
+        
+//    }
 
-        // No keyboard available (rare, but safe)
-        if (Keyboard.current == null) return;
+//    // Update is called once per frame
+//    void Update()
+//    {
+       
+//        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+//        RaycastHit hit;
 
-        // Press E to lower bed (only if aiming at bed button)
-        if (Keyboard.current.eKey.wasPressedThisFrame && targeting.IsAimingAtBedButton())
-        {
-            targeting.CurrentPatient.LowerBedServerRpc();
-        }
+//        if(Physics.Raycast(ray, out hit, interactRange))
+//        {
+//            if(hit.collider.CompareTag("Interactable"))
+//            {
+//                crosshairUIScript.SetInteract(true);
 
-        // Press Space to perform one compression (only if aiming at patient)
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && targeting.IsAimingAtPatient())
-        {
-            targeting.CurrentPatient.CompressionServerRpc();
-        }
-    }
-}
+//                if(Keyboard.current.eKey.wasPressedThisFrame)
+//                {
+//                    Button button = hit.collider.GetComponent<Button>();
+//                    button.Press();
+
+//                }
+
+//                return;
+//            }
+//        }
+
+//        crosshairUIScript.SetInteract(false);
+
+
+//    }
+//}

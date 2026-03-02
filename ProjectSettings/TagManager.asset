@@ -4,8 +4,7 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - bedButton
-  - patient
+  - Interactable
   layers:
   - Default
   - TransparentFX
