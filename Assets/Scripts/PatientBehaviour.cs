@@ -14,11 +14,12 @@ public class PatientBehaviour : NetworkBehaviour
     // Number of compressions needed to save the patient
     [SerializeField] private int compressionsToSave = 10;
 
-    [SerializeField] private float minSecondsBetweenCompressions = 0.0f;
+    [SerializeField] private float minSecondsBetweenCompressions = 0.25f;
     private double lastCompressionTimeServer = -999;
 
     // Audio
     [SerializeField] private AudioSource monitorAudio;
+    [SerializeField] private AudioSource monitorAudioHealthy;
 
     // Animation scripts
     [SerializeField] private BedAnimation bedAnim;
@@ -27,8 +28,12 @@ public class PatientBehaviour : NetworkBehaviour
 
     [SerializeField] private GameObject cprHandsRoot;
 
-    //which hospital this patient belongs to (set by spawner)
+    // which hospital this patient belongs to (set by spawner)
     [SerializeField] private HospitalType hospital = HospitalType.Blue;
+
+    // NEW: networked identity so clients know which RoomVolume this patient belongs to
+    public NetworkVariable<int> RoomNumber = new(0);
+    public NetworkVariable<int> HospitalNet = new((int)HospitalType.Blue);
 
     // Networked state (server writes, clients read)
     public NetworkVariable<bool> BedLowered = new(false);
@@ -43,10 +48,20 @@ public class PatientBehaviour : NetworkBehaviour
     // Server timing
     private double startTimeServer;
 
-    //called by CodeBlueSpawner right after Instantiate
-    public void SetHospital(HospitalType h)
+    // CLIENT: audio gating by room
+    private RoomVolume myRoomVolume;
+    private bool localPlayerInRoom;
+
+    // called by CodeBlueSpawner right after Instantiate
+    public void SetHospitalAndRoom(HospitalType h, int roomNumber)
     {
         hospital = h;
+
+        if (IsServer)
+        {
+            HospitalNet.Value = (int)h;
+            RoomNumber.Value = roomNumber;
+        }
     }
 
     public GameObject GetCprHandsObject()
@@ -57,6 +72,10 @@ public class PatientBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        // Hard stop both audio sources so nothing auto-plays
+        if (monitorAudio != null) monitorAudio.Stop();
+        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
+
         if (cprHandsRoot != null)
             cprHandsRoot.SetActive(false);
 
@@ -68,11 +87,25 @@ public class PatientBehaviour : NetworkBehaviour
         if (IsServer)
         {
             startTimeServer = NetworkManager.Singleton.ServerTime.Time;
-
-            PlayMonitorAudioClientRpc();
-
             Resolved.OnValueChanged += OnResolvedChangedServer;
         }
+        else
+        {
+            // CLIENT: hook room volume + update audio when state changes
+            TryHookRoomVolumeClient();
+
+            Resolved.OnValueChanged += OnResolvedChangedClient;
+            Saved.OnValueChanged += OnSavedChangedClient;
+        }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+
+        // stop locally
+        if (monitorAudio != null) monitorAudio.Stop();
+        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
     }
 
     public override void OnDestroy()
@@ -82,7 +115,20 @@ public class PatientBehaviour : NetworkBehaviour
         BedLowered.OnValueChanged -= OnBedLoweredChanged;
 
         if (IsServer)
+        {
             Resolved.OnValueChanged -= OnResolvedChangedServer;
+        }
+        else
+        {
+            Resolved.OnValueChanged -= OnResolvedChangedClient;
+            Saved.OnValueChanged -= OnSavedChangedClient;
+
+            if (myRoomVolume != null)
+            {
+                myRoomVolume.OnLocalPlayerEntered -= OnLocalPlayerEnteredRoom;
+                myRoomVolume.OnLocalPlayerExited -= OnLocalPlayerExitedRoom;
+            }
+        }
     }
 
     private void OnBedLoweredChanged(bool oldValue, bool newValue)
@@ -102,56 +148,87 @@ public class PatientBehaviour : NetworkBehaviour
         }
     }
 
-    // ---------------- AUDIO ----------------
+    // ---------------- CLIENT ROOM AUDIO ----------------
 
-    //only play monitor if local player is in the same hospital
-    [ClientRpc]
-    private void PlayMonitorAudioClientRpc()
+    private void TryHookRoomVolumeClient()
     {
-        if (monitorAudio == null) return;
+        // Find matching room volume once on this client
+        var volumes = FindObjectsByType<RoomVolume>(FindObjectsSortMode.None);
+        HospitalType myHospital = (HospitalType)HospitalNet.Value;
+        int myRoom = RoomNumber.Value;
 
-        // Find the local player's hospital (owner player object)
-        var players = FindObjectsByType<PlayerHospital>(FindObjectsSortMode.None);
-        for (int i = 0; i < players.Length; i++)
+        for (int i = 0; i < volumes.Length; i++)
         {
-            var ph = players[i];
-            if (ph == null) continue;
+            var rv = volumes[i];
+            if (rv == null) continue;
 
-            // Only care about THIS client's player
-            if (!ph.IsOwner) continue;
-
-            // If different hospital, do nothing (prevents tons of monitors)
-            if (ph.Hospital.Value != hospital)
-                return;
-
-            break;
+            if (rv.Hospital == myHospital && rv.RoomNumber == myRoom)
+            {
+                myRoomVolume = rv;
+                break;
+            }
         }
 
-        monitorAudio.Stop();
-        monitorAudio.Play();
+        if (myRoomVolume != null)
+        {
+            myRoomVolume.OnLocalPlayerEntered += OnLocalPlayerEnteredRoom;
+            myRoomVolume.OnLocalPlayerExited += OnLocalPlayerExitedRoom;
+        }
     }
 
-    //only stop if eligible to play on this client
-    [ClientRpc]
-    private void StopMonitorAudioClientRpc()
+    private void OnLocalPlayerEnteredRoom()
     {
-        if (monitorAudio == null) return;
+        localPlayerInRoom = true;
+        UpdateMonitorAudioLocal();
+    }
 
-        var players = FindObjectsByType<PlayerHospital>(FindObjectsSortMode.None);
-        for (int i = 0; i < players.Length; i++)
+    private void OnLocalPlayerExitedRoom()
+    {
+        localPlayerInRoom = false;
+
+        if (monitorAudio != null) monitorAudio.Stop();
+        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
+    }
+
+    private void OnResolvedChangedClient(bool oldValue, bool newValue)
+    {
+        UpdateMonitorAudioLocal();
+    }
+
+    private void OnSavedChangedClient(bool oldValue, bool newValue)
+    {
+        UpdateMonitorAudioLocal();
+    }
+
+    private void UpdateMonitorAudioLocal()
+    {
+        if (!localPlayerInRoom) return;
+
+        // ensure only ONE source plays
+        if (monitorAudio != null) monitorAudio.Stop();
+        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
+
+        bool resolved = Resolved.Value;
+        bool saved = Saved.Value;
+
+        if (resolved && saved)
         {
-            var ph = players[i];
-            if (ph == null) continue;
-
-            if (!ph.IsOwner) continue;
-
-            if (ph.Hospital.Value != hospital)
-                return;
-
-            break;
+            // Saved -> healthy heartbeat until you leave or despawn
+            if (monitorAudioHealthy != null)
+            {
+                monitorAudioHealthy.loop = true;
+                monitorAudioHealthy.Play();
+            }
         }
-
-        monitorAudio.Stop();
+        else
+        {
+            // Not resolved OR died -> keep default monitor (flatline included in clip)
+            if (monitorAudio != null)
+            {
+                monitorAudio.loop = true;
+                monitorAudio.Play();
+            }
+        }
     }
 
     // ---------------- SERVER UPDATE ----------------
@@ -167,20 +244,7 @@ public class PatientBehaviour : NetworkBehaviour
         {
             Saved.Value = false;
             Resolved.Value = true;
-
-            StopMonitorAudioClientRpc();
-            OnResolvedClientRpc(false);
         }
-    }
-
-    // ---------------- CLIENT FEEDBACK ----------------
-
-    [ClientRpc]
-    private void OnResolvedClientRpc(bool saved)
-    {
-        Debug.Log(saved
-            ? $"[Patient] Saved! netId={NetworkObjectId}"
-            : $"[Patient] Died (flatline) netId={NetworkObjectId}");
     }
 
     // ---------------- HIT TESTING ----------------
@@ -264,9 +328,6 @@ public class PatientBehaviour : NetworkBehaviour
         {
             Saved.Value = true;
             Resolved.Value = true;
-
-            StopMonitorAudioClientRpc();
-            OnResolvedClientRpc(true);
         }
     }
 

@@ -121,7 +121,7 @@ public class CodeBlueSpawner : NetworkBehaviour
 
         var pb = patient.GetComponent<PatientBehaviour>();
         if (pb != null)
-            pb.SetHospital(hospital);
+            pb.SetHospitalAndRoom(hospital, roomNumber);
 
         patient.Spawn(true);
 

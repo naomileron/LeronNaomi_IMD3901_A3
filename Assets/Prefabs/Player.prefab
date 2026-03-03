@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 5362041464182437150}
   - component: {fileID: 1026528984487653475}
   - component: {fileID: 8360782980307725321}
+  - component: {fileID: 1729294908979799267}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -291,6 +292,7 @@ MonoBehaviour:
   hostInRangeColour: {r: 0, g: 0, b: 1, a: 1}
   clientInRangeColour: {r: 0, g: 1, b: 0, a: 1}
   regularHands: {fileID: 8381464239207463021}
+  raycastRate: 0.05
 --- !u!114 &5362041464182437150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,6 +336,29 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Score:
     m_InternalValue: 0
+--- !u!136 &1729294908979799267
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6864775169101377494}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6912588343692552901
 GameObject:
   m_ObjectHideFlags: 0
