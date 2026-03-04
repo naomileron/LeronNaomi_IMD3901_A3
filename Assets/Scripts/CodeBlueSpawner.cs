@@ -32,22 +32,17 @@ public class CodeBlueSpawner : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        //Debug.Log("[CodeBlueSpawner] OnNetworkSpawn (SERVER)");
-
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
 
         // Auto-find room volumes if none assigned
         if (roomVolumes == null || roomVolumes.Length == 0)
         {
             roomVolumes = FindObjectsByType<RoomVolume>(FindObjectsSortMode.None);
-            //Debug.Log($"[CodeBlueSpawner] Auto-found {roomVolumes.Length} RoomVolumes");
         }
 
         foreach (var rv in roomVolumes)
         {
             if (rv == null) continue;
-
-            //Debug.Log($"[CodeBlueSpawner] Hook RoomVolume ({rv.Hospital},{rv.RoomNumber})");
             rv.OnRoomBecameEmptyServer += OnRoomBecameEmptyServer;
         }
 
@@ -82,16 +77,9 @@ public class CodeBlueSpawner : NetworkBehaviour
         if (started) return;
 
         int connected = NetworkManager.Singleton.ConnectedClientsList.Count;
-
-        if (connected < 2)
-        {
-            //Debug.Log($"[CodeBlueSpawner] Waiting for players {connected}/2");
-            return;
-        }
+        if (connected < 2) return;
 
         started = true;
-
-        //Debug.Log("[CodeBlueSpawner] Both players connected. First Code Blue.");
         TriggerCodeBlue();
     }
 
@@ -105,8 +93,12 @@ public class CodeBlueSpawner : NetworkBehaviour
 
     void SpawnPatient(ref NetworkObject currentPatient, NetworkObject prefab, Transform[] spawnPoints)
     {
+        if (prefab == null) return;
+        if (spawnPoints == null || spawnPoints.Length == 0) return;
+
         int randomIndex = Random.Range(0, spawnPoints.Length);
         Transform spawn = spawnPoints[randomIndex];
+        if (spawn == null) return;
 
         RoomSpawnPoint info = spawn.GetComponent<RoomSpawnPoint>();
 
@@ -116,22 +108,23 @@ public class CodeBlueSpawner : NetworkBehaviour
         int roomNumber =
             (info != null) ? info.RoomNumber : (randomIndex + 1);
 
-        NetworkObject patient =
-            Instantiate(prefab, spawn.position, spawn.rotation);
-
+        NetworkObject patient = Instantiate(prefab, spawn.position, spawn.rotation);
         var pb = patient.GetComponent<PatientBehaviour>();
-        if (pb != null)
-            pb.SetHospitalAndRoom(hospital, roomNumber);
+        Debug.Log($"[Spawner] Spawned patient pb={(pb != null)} prefab={prefab.name}", patient);
 
+        // Spawn FIRST (prevents NetworkVariable pre-spawn warnings)
         patient.Spawn(true);
+
+        // Now initialize NetVars safely on server
+        if (pb != null)
+        {
+            pb.InitializeRoomIdentityServer(hospital, roomNumber);
+            pb.OnResolvedServer += OnPatientResolvedServer;
+        }
 
         currentPatient = patient;
 
-        // existing logic continues unchanged
         patientRoom[patient] = (hospital, roomNumber);
-
-        if (pb != null)
-            pb.OnResolvedServer += OnPatientResolvedServer;
 
         if (announcementSystem != null)
         {
@@ -162,45 +155,31 @@ public class CodeBlueSpawner : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        var netObj = pb.GetComponent<NetworkObject>();
+        var netObj = pb != null ? pb.GetComponent<NetworkObject>() : null;
         if (netObj == null) return;
 
         if (!patientRoom.TryGetValue(netObj, out var roomInfo))
-        {
-            //Debug.LogWarning("[CodeBlueSpawner] Resolved patient missing room mapping.");
             return;
-        }
 
         int scoreDelta = pb.Saved.Value ? 1 : -1;
 
         ScoreSystem score = GetPlayerScoreForHospital(roomInfo.hospital);
         if (score != null)
-        {
             score.AddScore(scoreDelta);
-            //Debug.Log($"[CodeBlueSpawner][SERVER] Score updated hospital={roomInfo.hospital} delta={scoreDelta}");
-        }
-        else
-        {
-            //Debug.LogWarning($"[CodeBlueSpawner][SERVER] No PlayerScore found for hospital={roomInfo.hospital}");
-        }
 
         var key = (roomInfo.hospital, roomInfo.roomNumber);
 
-        //Debug.Log($"[CodeBlueSpawner] Patient resolved netId={netObj.NetworkObjectId} key={key}");
-
-        //check if room already empty
         RoomVolume room = FindRoomVolume(key.hospital, key.roomNumber);
 
         if (room != null && room.IsEmptyServer)
         {
-            //Debug.Log($"[CodeBlueSpawner] Room already empty -> immediate despawn netId={netObj.NetworkObjectId}");
+            if (pb != null) pb.OnResolvedServer -= OnPatientResolvedServer;
 
             patientRoom.Remove(netObj);
             netObj.Despawn(true);
         }
         else
         {
-            // fallback to normal delayed despawn
             if (!pendingDespawnByRoom.TryGetValue(key, out var list))
             {
                 list = new List<NetworkObject>();
@@ -224,8 +203,6 @@ public class CodeBlueSpawner : NetworkBehaviour
 
         var key = (hospital, roomNumber);
 
-        //Debug.Log($"[CodeBlueSpawner] ROOM EMPTY event {key}");
-
         if (!pendingDespawnByRoom.TryGetValue(key, out var list))
             return;
 
@@ -234,8 +211,6 @@ public class CodeBlueSpawner : NetworkBehaviour
             var p = list[i];
             if (p != null && p.IsSpawned)
             {
-                //Debug.Log($"[CodeBlueSpawner] DESPAWN patient netId={p.NetworkObjectId}");
-
                 var pb = p.GetComponent<PatientBehaviour>();
                 if (pb != null) pb.OnResolvedServer -= OnPatientResolvedServer;
 

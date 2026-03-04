@@ -1294,6 +1294,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 0
   RoomNumber: 3
+  volumeCollider: {fileID: 362840287}
+--- !u!54 &362840290
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 55561226}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &369238308 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
@@ -1822,6 +1850,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 572351042}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 572351043}
   m_SourcePrefab: {fileID: 100100000, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
 --- !u!1001 &451388572
 PrefabInstance:
@@ -2211,6 +2242,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 0
   RoomNumber: 6
+  volumeCollider: {fileID: 572351040}
+--- !u!54 &572351043
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 572351037}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &591441485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2276,6 +2335,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1040320476}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1040320477}
   m_SourcePrefab: {fileID: 100100000, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
 --- !u!1001 &605998744
 PrefabInstance:
@@ -2742,6 +2804,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1255765997}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1255765998}
   m_SourcePrefab: {fileID: 100100000, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
 --- !u!4 &744640537 stripped
 Transform:
@@ -2809,6 +2874,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 0
   RoomNumber: 1
+  volumeCollider: {fileID: 744640540}
+--- !u!54 &744640543
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409786315}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &747215791
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2874,6 +2967,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1961997514}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1961997515}
   m_SourcePrefab: {fileID: 100100000, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
 --- !u!1001 &756018978
 PrefabInstance:
@@ -2997,6 +3093,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1402536730}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1402536731}
   m_SourcePrefab: {fileID: 100100000, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
 --- !u!1001 &810295820
 PrefabInstance:
@@ -3063,6 +3162,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 362840289}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 362840290}
   m_SourcePrefab: {fileID: 100100000, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
 --- !u!1 &837040113
 GameObject:
@@ -3512,6 +3614,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 1
   RoomNumber: 5
+  volumeCollider: {fileID: 1040320474}
+--- !u!54 &1040320477
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266887725}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &1053708153
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3577,6 +3707,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2045240662}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2045240663}
   m_SourcePrefab: {fileID: 100100000, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
 --- !u!1001 &1069988632
 PrefabInstance:
@@ -3918,6 +4051,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1784098118}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1784098119}
   m_SourcePrefab: {fileID: 100100000, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
 --- !u!1 &1186384306
 GameObject:
@@ -4088,6 +4224,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
       insertIndex: -1
       addedObject: {fileID: 744640542}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 744640543}
   m_SourcePrefab: {fileID: 100100000, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
 --- !u!1001 &1219873745
 PrefabInstance:
@@ -4301,6 +4440,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 1
   RoomNumber: 3
+  volumeCollider: {fileID: 1255765995}
+--- !u!54 &1255765998
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255765992}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &1260901597 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5ccfcfc575f67274d98806654bdbf4a2, type: 3}
@@ -4721,6 +4888,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 1
   RoomNumber: 1
+  volumeCollider: {fileID: 1402536728}
+--- !u!54 &1402536731
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849405448}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &1405555013
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4786,6 +4981,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2132807728}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2132807729}
   m_SourcePrefab: {fileID: 100100000, guid: 83cf31d2fe083664aac8c5cd123d9b8c, type: 3}
 --- !u!1 &1414448529
 GameObject:
@@ -4967,6 +5165,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 1
   RoomNumber: 4
+  volumeCollider: {fileID: 1444236291}
+--- !u!54 &1444236294
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1444236288}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &1447428590 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6107979918083717061, guid: d7561889ed225f440abef01860a852b6, type: 3}
@@ -6141,6 +6367,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 0
   RoomNumber: 5
+  volumeCollider: {fileID: 1784098116}
+--- !u!54 &1784098119
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1784098113}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &1784203377
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6206,6 +6460,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2084873549}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2084873550}
   m_SourcePrefab: {fileID: 100100000, guid: 97e993b6d3e3e494484cc2390aaf0459, type: 3}
 --- !u!4 &1799946247 stripped
 Transform:
@@ -6630,6 +6887,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 1
   RoomNumber: 2
+  volumeCollider: {fileID: 1961997512}
+--- !u!54 &1961997515
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 707338698}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &1964528854 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6107979918083717061, guid: d7561889ed225f440abef01860a852b6, type: 3}
@@ -6852,6 +7137,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 0
   RoomNumber: 4
+  volumeCollider: {fileID: 2045240660}
+--- !u!54 &2045240663
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881532224}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &2066082281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6980,6 +7293,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 0
   RoomNumber: 2
+  volumeCollider: {fileID: 2084873547}
+--- !u!54 &2084873550
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390311134}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &2094895126
 GameObject:
   m_ObjectHideFlags: 0
@@ -7091,6 +7432,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1444236293}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1444236294}
   m_SourcePrefab: {fileID: 100100000, guid: eb91b94a8abab434ba7ef7aa62864953, type: 3}
 --- !u!4 &2124008194 stripped
 Transform:
@@ -7163,6 +7507,34 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Hospital: 1
   RoomNumber: 6
+  volumeCollider: {fileID: 0}
+--- !u!54 &2132807729
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471988567}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &2133573212
 PrefabInstance:
   m_ObjectHideFlags: 0

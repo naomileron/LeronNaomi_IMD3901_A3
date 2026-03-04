@@ -9,24 +9,29 @@ public class RoomVolume : NetworkBehaviour
     public HospitalType Hospital;
     public int RoomNumber;
 
-    // SERVER: used by spawner to despawn once room becomes empty
     public event Action<HospitalType, int> OnRoomBecameEmptyServer;
 
-    // CLIENT (local): used for "only play audio when I'm in this room"
+    // CLIENT local-only events (for audio gating)
     public event Action OnLocalPlayerEntered;
     public event Action OnLocalPlayerExited;
 
-    private readonly HashSet<ulong> playersInside = new HashSet<ulong>();
+    [SerializeField] private Collider volumeCollider;
+    public Collider VolumeCollider => volumeCollider;
 
-    // local owner-only presence count (handles multiple colliders)
+    private readonly HashSet<ulong> playersInside = new HashSet<ulong>();
     private int localOwnerInsideCount = 0;
 
     public bool IsEmptyServer => playersInside.Count == 0;
 
+    private void Awake()
+    {
+        if (volumeCollider == null)
+            volumeCollider = GetComponent<Collider>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         // ---------- CLIENT LOCAL ENTER ----------
-        // Fire only for the local owner player (for audio gating)
         var phClient = other.GetComponentInParent<PlayerHospital>();
         if (phClient != null && phClient.IsOwner)
         {
