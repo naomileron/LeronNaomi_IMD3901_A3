@@ -6,6 +6,9 @@ public class PlayerInteraction : NetworkBehaviour
 {
     [SerializeField] private CrosshairBehaviour targeting;
 
+    [SerializeField] private AudioSource buttonClick;
+    [SerializeField] private AudioSource bedLower;
+
     private void Reset()
     {
         if (targeting == null)
@@ -28,7 +31,9 @@ public class PlayerInteraction : NetworkBehaviour
         if (Keyboard.current.eKey.wasPressedThisFrame && targeting.IsAimingAtBedButton())
         {
             //Debug.Log("[PlayerInteraction] E pressed while aiming at bed button");
+            buttonClick.Play();
             targeting.CurrentPatient.LowerBedServerRpc();
+            bedLower.Play();
         }
 
         // Press Space to perform one compression (only if aiming at patient)
