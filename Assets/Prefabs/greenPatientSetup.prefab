@@ -675,11 +675,43 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 201741063297480834, guid: cd82a02c08ad77a46a7a2860ddab25c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4778712034854199889}
   m_SourcePrefab: {fileID: 100100000, guid: cd82a02c08ad77a46a7a2860ddab25c1, type: 3}
+--- !u!1 &4960959787833911885 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 201741063297480834, guid: cd82a02c08ad77a46a7a2860ddab25c1, type: 3}
+  m_PrefabInstance: {fileID: 5049771896986587855}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4778712034854199889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4960959787833911885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414bcffb1fc854043a22105f5925102c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  patient: {fileID: 0}
+  monitorRenderer: {fileID: 6906308325663165336}
+  monitorMaterials:
+  - {fileID: 2100000, guid: 8bc75ea94a1746b4db46fb5b6d171669, type: 2}
+  - {fileID: 2100000, guid: 7e21edcb676261d40ab15c9b5b8ac07b, type: 2}
+  - {fileID: 2100000, guid: a1f2ca1aee1e584489774de62bf7fb49, type: 2}
 --- !u!4 &5733942178370433271 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 686634845438534200, guid: cd82a02c08ad77a46a7a2860ddab25c1, type: 3}
+  m_PrefabInstance: {fileID: 5049771896986587855}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6906308325663165336 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1858937839398099287, guid: cd82a02c08ad77a46a7a2860ddab25c1, type: 3}
   m_PrefabInstance: {fileID: 5049771896986587855}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5905762483136458654
