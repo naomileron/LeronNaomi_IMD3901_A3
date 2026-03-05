@@ -46,8 +46,8 @@ public class Scoreboard : MonoBehaviour
         }
 
         // Show placeholders if not ready yet
-        if (blueScoreText != null) blueScoreText.text = blueScore != null ? $"Blue: {blueScore.Score.Value}" : "Blue: --";
-        if (greenScoreText != null) greenScoreText.text = greenScore != null ? $"Green: {greenScore.Score.Value}" : "Green: --";
+        if (blueScoreText != null) blueScoreText.text = blueScore != null ? $"BLUE HOSPITAL: {blueScore.Score.Value}" : "BLUE HOSPITAL: --";
+        if (greenScoreText != null) greenScoreText.text = greenScore != null ? $"GREEN HOSPITAL: {greenScore.Score.Value}" : "GREEN HOSPITAL: --";
 
         if (blueScore == null || greenScore == null) return;
 
@@ -70,11 +70,11 @@ public class Scoreboard : MonoBehaviour
 
     private void OnBlueChanged(int oldV, int newV)
     {
-        if (blueScoreText != null) blueScoreText.text = $"Blue: {newV}";
+        if (blueScoreText != null) blueScoreText.text = $"BLUE HOSPITAL: {newV}";
     }
 
     private void OnGreenChanged(int oldV, int newV)
     {
-        if (greenScoreText != null) greenScoreText.text = $"Green: {newV}";
+        if (greenScoreText != null) greenScoreText.text = $"GREEN HOSPITAL: {newV}";
     }
 }

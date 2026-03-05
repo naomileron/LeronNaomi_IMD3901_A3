@@ -19,9 +19,9 @@ public class PatientBehaviour : NetworkBehaviour
     private double lastCompressionTimeServer = -999;
 
     // Audio
-    [SerializeField] private AudioSource monitorAudio;
-    [SerializeField] private AudioSource monitorAudioHealthy;
-    [SerializeField] private AudioSource monitorAudioFlatline;
+    [SerializeField] private AudioSource monitorAudio;          // distressed/active
+    [SerializeField] private AudioSource monitorAudioHealthy;   // saved
+    [SerializeField] private AudioSource monitorAudioFlatline;  // dead
 
     // Animation scripts
     [SerializeField] private BedAnimation bedAnim;
@@ -54,12 +54,9 @@ public class PatientBehaviour : NetworkBehaviour
     private RoomVolume myRoomVolume;
     private bool localPlayerInRoom;
     private bool roomBindRequested;
+    private Coroutine roomHookRoutine;
 
-    private void Awake()
-    {
-        Debug.Log("[Patient] Awake fired", this);
-    }
-
+    // --- Called by spawner AFTER patient.Spawn() ---
     public void InitializeRoomIdentityServer(HospitalType h, int roomNumber)
     {
         if (!IsServer) return;
@@ -67,11 +64,6 @@ public class PatientBehaviour : NetworkBehaviour
         hospital = h;
         HospitalNet.Value = (int)h;
         RoomNumber.Value = roomNumber;
-    }
-
-    public void SetHospitalAndRoom(HospitalType h, int roomNumber)
-    {
-        InitializeRoomIdentityServer(h, roomNumber);
     }
 
     public GameObject GetCprHandsObject()
@@ -82,11 +74,8 @@ public class PatientBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log($"[Patient] OnNetworkSpawn IsServer={IsServer} IsClient={IsClient} netId={NetworkObjectId}", this);
-
-        // Stop audio locally
-        if (monitorAudio != null) monitorAudio.Stop();
-        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
+        // Stop audio locally so nothing auto-plays
+        StopAllAudioLocal();
 
         if (cprHandsRoot != null)
             cprHandsRoot.SetActive(false);
@@ -103,23 +92,20 @@ public class PatientBehaviour : NetworkBehaviour
             Resolved.OnValueChanged += OnResolvedChangedServer;
         }
 
-        // CLIENT setup (IMPORTANT: host is also a client)
+        // CLIENT setup (host is also a client)
         if (IsClient)
         {
-            BindRoomVolumeWhenReadyClient();
-
             Resolved.OnValueChanged += OnResolvedChangedClient;
             Saved.OnValueChanged += OnSavedChangedClient;
+
+            BindRoomVolumeWhenReadyClient();
         }
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-
-        // stop locally
-        if (monitorAudio != null) monitorAudio.Stop();
-        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
+        StopAllAudioLocal();
     }
 
     public override void OnDestroy()
@@ -136,14 +122,14 @@ public class PatientBehaviour : NetworkBehaviour
             Resolved.OnValueChanged -= OnResolvedChangedClient;
             Saved.OnValueChanged -= OnSavedChangedClient;
 
-            HospitalNet.OnValueChanged -= OnRoomIdentityChangedClient;
-            RoomNumber.OnValueChanged -= OnRoomIdentityChangedClient;
-
             if (myRoomVolume != null)
             {
                 myRoomVolume.OnLocalPlayerEntered -= OnLocalPlayerEnteredRoom;
                 myRoomVolume.OnLocalPlayerExited -= OnLocalPlayerExitedRoom;
             }
+
+            if (roomHookRoutine != null)
+                StopCoroutine(roomHookRoutine);
         }
     }
 
@@ -164,65 +150,47 @@ public class PatientBehaviour : NetworkBehaviour
         }
     }
 
-    // ---------------- CLIENT ROOM AUDIO ----------------
+    // ---------------- CLIENT ROOM BINDING ----------------
 
     private void BindRoomVolumeWhenReadyClient()
     {
         if (roomBindRequested) return;
         roomBindRequested = true;
 
-        // Try immediately
-        if (TryHookRoomVolumeClient())
-            return;
-
-        // Retry when identity arrives
-        HospitalNet.OnValueChanged += OnRoomIdentityChangedClient;
-        RoomNumber.OnValueChanged += OnRoomIdentityChangedClient;
-
-        // Safety retry next frame (covers cases where values arrive right after spawn)
-        StartCoroutine(DelayedRoomHookClient());
+        // Retry for a short time until RoomNumber arrives and volume exists
+        roomHookRoutine = StartCoroutine(RoomHookRetryClient());
     }
 
-    private IEnumerator DelayedRoomHookClient()
+    private IEnumerator RoomHookRetryClient()
     {
-        yield return null;
-        TryHookRoomVolumeClient();
-    }
-
-    private void OnRoomIdentityChangedClient(int oldValue, int newValue)
-    {
-        if (TryHookRoomVolumeClient())
+        // Try for up to ~2 seconds
+        for (int i = 0; i < 120; i++)
         {
-            HospitalNet.OnValueChanged -= OnRoomIdentityChangedClient;
-            RoomNumber.OnValueChanged -= OnRoomIdentityChangedClient;
+            if (TryHookRoomVolumeClient())
+                yield break;
+
+            yield return null;
         }
+
+        // Only warn after we truly failed for a while
+        Debug.LogWarning(
+            $"[Patient] Failed to bind RoomVolume after retries netId={NetworkObjectId} hospital={(HospitalType)HospitalNet.Value} room={RoomNumber.Value}",
+            this
+        );
     }
 
-    // returns true if successfully bound
     private bool TryHookRoomVolumeClient()
     {
-        // Already hooked
         if (myRoomVolume != null) return true;
 
         HospitalType myHospital = (HospitalType)HospitalNet.Value;
         int myRoom = RoomNumber.Value;
 
-        // Debug once per attempt (fine)
-        Debug.Log($"[Patient] Hook attempt netId={NetworkObjectId} hospital={myHospital} room={myRoom}", this);
-
-        // Not initialized yet (NetVars haven't arrived)
-        if (myRoom <= 0)
-        {
-            Debug.LogWarning($"[Patient] Hook not ready (room <= 0) netId={NetworkObjectId} hospital={myHospital} room={myRoom}", this);
-            return false;
-        }
+        // IMPORTANT: room==0 right after spawn is normal; do not warn
+        if (myRoom <= 0) return false;
 
         var volumes = FindObjectsByType<RoomVolume>(FindObjectsSortMode.None);
-        if (volumes == null || volumes.Length == 0)
-        {
-            Debug.LogWarning($"[Patient] No RoomVolumes found in scene netId={NetworkObjectId}", this);
-            return false;
-        }
+        if (volumes == null || volumes.Length == 0) return false;
 
         for (int i = 0; i < volumes.Length; i++)
         {
@@ -238,144 +206,22 @@ public class PatientBehaviour : NetworkBehaviour
 
         if (myRoomVolume == null)
         {
+            // Now worth warning: identity is valid but no matching volume exists
             Debug.LogWarning($"[Patient] No matching RoomVolume for ({myHospital},{myRoom}) netId={NetworkObjectId}", this);
             return false;
         }
 
-        // Safety: avoid double-subscribe if something weird happens
+        // Ensure we don't double-subscribe
         myRoomVolume.OnLocalPlayerEntered -= OnLocalPlayerEnteredRoom;
         myRoomVolume.OnLocalPlayerExited -= OnLocalPlayerExitedRoom;
 
         myRoomVolume.OnLocalPlayerEntered += OnLocalPlayerEnteredRoom;
         myRoomVolume.OnLocalPlayerExited += OnLocalPlayerExitedRoom;
 
-        Debug.Log($"[Patient] BOUND OK => ({myHospital},{myRoom}) netId={NetworkObjectId} roomVolume={myRoomVolume.name}", this);
-
-        // If your RoomVolume uses VolumeCollider for initial overlap, warn if missing
-        if (myRoomVolume.VolumeCollider == null)
-        {
-            Debug.LogWarning($"[Patient] RoomVolume '{myRoomVolume.name}' has no VolumeCollider assigned (initial overlap check may fail).", myRoomVolume);
-        }
-
-        // If player spawned inside the room, start audio immediately
+        // If player spawned inside the room, start immediately
         ForceInitialRoomCheckClient();
 
         return true;
-    }
-
-    //private void OnLocalPlayerEnteredRoom()
-    //{
-    //    localPlayerInRoom = true;
-    //    UpdateMonitorAudioLocal();
-
-    //    Debug.Log($"[Patient] ENTER CALLBACK netId={NetworkObjectId} room=({(HospitalType)HospitalNet.Value},{RoomNumber.Value})", this);
-
-    //    if (monitorAudio != null)
-    //    {
-    //        monitorAudio.Stop();
-    //        monitorAudio.Play();
-    //        Debug.Log("[Patient] FORCED monitorAudio.Play()", this);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning("[Patient] monitorAudio is NULL", this);
-    //    }
-    //}
-    private void OnLocalPlayerEnteredRoom()
-    {
-        localPlayerInRoom = true;
-        UpdateMonitorAudioLocal();
-    }
-
-    private void OnLocalPlayerExitedRoom()
-    {
-        localPlayerInRoom = false;
-
-        if (monitorAudio != null) monitorAudio.Stop();
-        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
-    }
-
-    private void OnResolvedChangedClient(bool oldValue, bool newValue)
-    {
-        // only matters if we're in the room
-        if (!localPlayerInRoom) return;
-
-        UpdateMonitorAudioLocal();
-    }
-
-    private void OnSavedChangedClient(bool oldValue, bool newValue)
-    {
-        if (!localPlayerInRoom) return;
-
-        UpdateMonitorAudioLocal();
-    }
-
-    private void UpdateMonitorAudioLocal()
-    {
-        if (!localPlayerInRoom) return;
-
-        bool resolved = Resolved.Value;
-        bool saved = Saved.Value;
-
-        if (monitorAudio != null) monitorAudio.Stop();
-        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
-        if (monitorAudioFlatline != null) monitorAudioFlatline.Stop();
-
-        // Default mute states
-        if (monitorAudio != null) monitorAudio.mute = false;
-        if (monitorAudioHealthy != null) monitorAudioHealthy.mute = true;
-        if (monitorAudioFlatline != null) monitorAudioFlatline.mute = true;
-
-        if (resolved && saved)
-        {
-            if (monitorAudio != null) monitorAudio.mute = true;
-            if (monitorAudioFlatline != null) monitorAudioFlatline.mute = true;
-
-            if (monitorAudioHealthy == null || monitorAudioHealthy.clip == null)
-            {
-                Debug.LogError("[Patient] monitorAudioHealthy missing or has no clip.", this);
-                return;
-            }
-
-            monitorAudioHealthy.mute = false;
-            monitorAudioHealthy.loop = true;
-            monitorAudioHealthy.Play();
-            return;
-        }
-
-        if (resolved && !saved)
-        {
-            if (monitorAudio != null) monitorAudio.mute = true;
-            if (monitorAudioHealthy != null) monitorAudioHealthy.mute = true;
-
-            if (monitorAudioFlatline != null && monitorAudioFlatline.clip != null)
-            {
-                monitorAudioFlatline.mute = false;
-                monitorAudioFlatline.loop = true;
-                monitorAudioFlatline.Play();
-                return;
-            }
-
-            // fallback if no flatline source
-            if (monitorAudio != null && monitorAudio.clip != null)
-            {
-                monitorAudio.mute = false;
-                monitorAudio.loop = true;
-                monitorAudio.Play();
-            }
-            return;
-        }
-
-        // active / not resolved yet
-        if (monitorAudio == null || monitorAudio.clip == null)
-        {
-            Debug.LogError("[Patient] monitorAudio missing or has no clip.", this);
-            return;
-        }
-
-        monitorAudio.mute = false;
-        monitorAudio.loop = true;
-        monitorAudio.Play();
     }
 
     private void ForceInitialRoomCheckClient()
@@ -398,10 +244,99 @@ public class PatientBehaviour : NetworkBehaviour
 
         if (local == null) return;
 
-        // If already inside room volume, simulate enter
         if (myRoomVolume.VolumeCollider.bounds.Contains(local.transform.position))
         {
             OnLocalPlayerEnteredRoom();
+        }
+    }
+
+    // ---------------- CLIENT ROOM CALLBACKS ----------------
+
+    private void OnLocalPlayerEnteredRoom()
+    {
+        localPlayerInRoom = true;
+        UpdateMonitorAudioLocal();
+    }
+
+    private void OnLocalPlayerExitedRoom()
+    {
+        localPlayerInRoom = false;
+        StopAllAudioLocal();
+    }
+
+    private void OnResolvedChangedClient(bool oldValue, bool newValue)
+    {
+        if (!localPlayerInRoom) return;
+        UpdateMonitorAudioLocal();
+    }
+
+    private void OnSavedChangedClient(bool oldValue, bool newValue)
+    {
+        if (!localPlayerInRoom) return;
+        UpdateMonitorAudioLocal();
+    }
+
+    // ---------------- AUDIO ----------------
+
+    private void StopAllAudioLocal()
+    {
+        if (monitorAudio != null) monitorAudio.Stop();
+        if (monitorAudioHealthy != null) monitorAudioHealthy.Stop();
+        if (monitorAudioFlatline != null) monitorAudioFlatline.Stop();
+    }
+
+    private void UpdateMonitorAudioLocal()
+    {
+        if (!localPlayerInRoom) return;
+
+        bool resolved = Resolved.Value;
+        bool saved = Saved.Value;
+
+        // Stop all to prevent overlap
+        StopAllAudioLocal();
+
+        // Default mute states
+        if (monitorAudio != null) monitorAudio.mute = false;
+        if (monitorAudioHealthy != null) monitorAudioHealthy.mute = true;
+        if (monitorAudioFlatline != null) monitorAudioFlatline.mute = true;
+
+        // Saved -> healthy
+        if (resolved && saved)
+        {
+            if (monitorAudioHealthy != null && monitorAudioHealthy.clip != null)
+            {
+                monitorAudioHealthy.mute = false;
+                monitorAudioHealthy.loop = true;
+                monitorAudioHealthy.Play();
+            }
+            return;
+        }
+
+        // Dead -> flatline
+        if (resolved && !saved)
+        {
+            if (monitorAudioFlatline != null && monitorAudioFlatline.clip != null)
+            {
+                monitorAudioFlatline.mute = false;
+                monitorAudioFlatline.loop = true;
+                monitorAudioFlatline.Play();
+            }
+            else if (monitorAudio != null && monitorAudio.clip != null)
+            {
+                // fallback if flatline source missing
+                monitorAudio.mute = false;
+                monitorAudio.loop = true;
+                monitorAudio.Play();
+            }
+            return;
+        }
+
+        // Active -> distressed monitor
+        if (monitorAudio != null && monitorAudio.clip != null)
+        {
+            monitorAudio.mute = false;
+            monitorAudio.loop = true;
+            monitorAudio.Play();
         }
     }
 
@@ -486,7 +421,6 @@ public class PatientBehaviour : NetworkBehaviour
         if (minSecondsBetweenCompressions > 0f)
         {
             double now = NetworkManager.Singleton.ServerTime.Time;
-
             if (now - lastCompressionTimeServer < minSecondsBetweenCompressions)
                 return;
 
@@ -502,10 +436,7 @@ public class PatientBehaviour : NetworkBehaviour
         {
             Saved.Value = true;
             Resolved.Value = true;
-            Debug.Log($"[Patient][SERVER] SAVED netId={NetworkObjectId} compressions={newCount}", this);
         }
-
-        Debug.Log($"[Patient] Audio update inRoom={localPlayerInRoom} resolved={Resolved.Value} saved={Saved.Value}", this);
     }
 
     [ClientRpc]
