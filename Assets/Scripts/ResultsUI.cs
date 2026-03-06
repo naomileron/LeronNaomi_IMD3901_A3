@@ -25,6 +25,15 @@ public class ResultsUI : NetworkBehaviour
         int blue = state.BlueScore.Value;
         int green = state.GreenScore.Value;
 
+        GameModeType gameMode = (GameModeType)state.GameMode.Value;
+        ScoreMode scoreMode = (ScoreMode)state.ScoreDisplayMode.Value;
+
+        if (scoreMode == ScoreMode.Team)
+        {
+            int teamScore = blue + green;
+            resultsText.text = $"Shift Over! You saved {teamScore} patients\n";
+        }
+
         if (blue > green)
         {
             resultsText.text = $"Blue Hospital Wins!\n\nFinal Scores\nBlue: {blue}\nGreen: {green}";

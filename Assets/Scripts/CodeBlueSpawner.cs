@@ -91,7 +91,25 @@ public class CodeBlueSpawner : NetworkBehaviour
 
     public void TriggerCodeBlue()
     {
-        if (!IsServer) return;
+        if (!IsServer)
+        {
+            return;
+        }
+
+        var config = FindFirstObjectByType<ConfigureGameMode>();
+
+        if (config != null && config.gameMode == GameModeType.Coop)
+        {
+            if (config.CoopHospital == HospitalType.Blue)
+            {
+                SpawnPatient(ref currentHOnePatient, hospitalOnePatient, hOneRoomSpawns);
+            }
+            else
+            {
+                SpawnPatient(ref currentHTwoPatient, hospitalTwoPatient, hTwoRoomSpawns);
+            }
+            return;
+        }
 
         SpawnPatient(ref currentHOnePatient, hospitalOnePatient, hOneRoomSpawns);
         SpawnPatient(ref currentHTwoPatient, hospitalTwoPatient, hTwoRoomSpawns);

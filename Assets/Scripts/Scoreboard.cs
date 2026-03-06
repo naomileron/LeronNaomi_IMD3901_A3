@@ -4,16 +4,24 @@ using UnityEngine;
 
 public class Scoreboard : MonoBehaviour
 {
+    //Competitive UI
     [SerializeField] private TMP_Text blueScoreText;
     [SerializeField] private TMP_Text greenScoreText;
+
+    //Collaborative UI
+    [SerializeField] private TMP_Text teamScoreText;
 
     private ScoreSystem blueScore;
     private ScoreSystem greenScore;
 
     private bool bound;
 
+    private ConfigureGameMode gameModeConfig;
+
     private void Start()
     {
+        gameModeConfig = FindFirstObjectByType<ConfigureGameMode>();
+
         // Try a few times while Netcode finishes spawning
         InvokeRepeating(nameof(TryBindOnce), 0.1f, 0.25f);
     }
@@ -51,12 +59,15 @@ public class Scoreboard : MonoBehaviour
 
         if (blueScore == null || greenScore == null) return;
 
-        // Subscribe ONCE
+        // Subscribe once
         blueScore.Score.OnValueChanged += OnBlueChanged;
         greenScore.Score.OnValueChanged += OnGreenChanged;
 
         bound = true;
         CancelInvoke(nameof(TryBindOnce));
+
+        UpdateTeamScore();
+        UpdateModeUI();
     }
 
     private void Unbind()
@@ -70,11 +81,73 @@ public class Scoreboard : MonoBehaviour
 
     private void OnBlueChanged(int oldV, int newV)
     {
-        if (blueScoreText != null) blueScoreText.text = $"BLUE HOSPITAL: {newV}";
+        if (blueScoreText != null)
+        {
+            blueScoreText.text = $"BLUE HOSPITAL: {newV}";
+        }
+
+        UpdateTeamScore();
     }
 
     private void OnGreenChanged(int oldV, int newV)
     {
-        if (greenScoreText != null) greenScoreText.text = $"GREEN HOSPITAL: {newV}";
+        if (greenScoreText != null)
+        {
+            greenScoreText.text = $"GREEN HOSPITAL: {newV}";
+        }
+
+        UpdateTeamScore();
+    }
+
+    private void UpdateTeamScore()
+    {
+        if (teamScoreText == null)
+        {
+            return;
+        }
+        if (blueScore == null || greenScore == null)
+        {
+            return;
+        }
+
+        int team = blueScore.Score.Value + greenScore.Score.Value;
+        teamScoreText.text = $"PATIENTS SAVED: {team}";
+    }
+
+    private void UpdateModeUI()
+    {
+        bool coop = gameModeConfig != null && gameModeConfig.gameMode == GameModeType.Coop;
+
+        if (coop)
+        {
+            if (blueScoreText != null)
+            {
+                blueScoreText.gameObject.SetActive(false);
+            }
+            if (greenScoreText != null)
+            {
+                greenScoreText.gameObject.SetActive(false);
+            }
+            if (teamScoreText != null)
+            {
+                teamScoreText.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            if (blueScoreText != null)
+            {
+                blueScoreText.gameObject.SetActive(true);
+            }
+            if (greenScoreText != null)
+            {
+                greenScoreText.gameObject.SetActive(true);
+
+            }
+            if (teamScoreText != null)
+            {
+                teamScoreText.gameObject.SetActive(false);
+            }
+        }
     }
 }

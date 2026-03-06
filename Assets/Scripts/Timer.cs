@@ -75,14 +75,13 @@ public class Timer : NetworkBehaviour
 
     private void EndMatchServer()
     {
-        Debug.LogError($"[Timer] EndMatchServer on '{name}' instanceID={GetInstanceID()} netId={NetworkObjectId} savedResultsPrefab={(savedResultsPrefab != null)}", this);
         if (!IsServer) return;
         if (ended.Value) return;
 
         ended.Value = true;
         running.Value = false;
 
-        //final scores on server
+        // final scores on server
         int blueScore = 0;
         int greenScore = 0;
 
@@ -99,13 +98,25 @@ public class Timer : NetworkBehaviour
             if (ph.Hospital.Value == HospitalType.Green) greenScore = ss.Score.Value;
         }
 
-        //Ensure results state exists and store results
+        // read mode config from scene
+        var modeConfig = FindFirstObjectByType<ConfigureGameMode>();
+
+        GameModeType gameMode = GameModeType.Competitive;
+        ScoreMode scoreMode = ScoreMode.Individual;
+
+        if (modeConfig != null)
+        {
+            gameMode = modeConfig.gameMode;
+            scoreMode = modeConfig.scoreMode;
+        }
+
+        // ensure results state exists and store results
         var existing = SaveResults.Instance;
         if (existing == null)
         {
             if (savedResultsPrefab == null)
             {
-                Debug.LogError("[Timer] resultsStatePrefab is NOT assigned in inspector.");
+                //Debug.LogError("[Timer] savedResultsPrefab is NOT assigned in inspector.");
                 return;
             }
 
@@ -114,9 +125,9 @@ public class Timer : NetworkBehaviour
             existing = state;
         }
 
-        existing.SetResultsServer(blueScore, greenScore);
+        existing.SetResultsServer(blueScore, greenScore, gameMode, scoreMode);
 
-        //Load results scene for all players
+        // load results scene for all players
         NetworkManager.SceneManager.LoadScene(resultsScene, LoadSceneMode.Single);
     }
 }

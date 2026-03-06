@@ -9,9 +9,11 @@ public class SaveResults : NetworkBehaviour
     public NetworkVariable<int> GreenScore = new(0);
     public NetworkVariable<bool> HasResults = new(false);
 
+    public NetworkVariable<int> GameMode = new((int)GameModeType.Competitive);
+    public NetworkVariable<int> ScoreDisplayMode = new((int)ScoreMode.Individual);
+
     private void Awake()
     {
-        // Persist across scene loads
         DontDestroyOnLoad(gameObject);
     }
 
@@ -23,21 +25,17 @@ public class SaveResults : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         if (Instance == this)
-        {
             Instance = null;
-        }
     }
 
-    // Server writes once at end of match
-    public void SetResultsServer(int blue, int green)
+    public void SetResultsServer(int blue, int green, GameModeType gameMode, ScoreMode scoreMode)
     {
-        if (!IsServer)
-        {
-            return;
-        }
+        if (!IsServer) return;
 
         BlueScore.Value = blue;
         GreenScore.Value = green;
+        GameMode.Value = (int)gameMode;
+        ScoreDisplayMode.Value = (int)scoreMode;
         HasResults.Value = true;
     }
 }
