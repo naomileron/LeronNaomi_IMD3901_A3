@@ -5,6 +5,7 @@ using UnityEngine;
 public class ResultsUI : NetworkBehaviour
 {
     [SerializeField] private TextMeshProUGUI resultsText;
+    [SerializeField] private TextMeshProUGUI teamResultsText;
 
     public override void OnNetworkSpawn()
     {
@@ -13,12 +14,22 @@ public class ResultsUI : NetworkBehaviour
 
     private void UpdateText()
     {
-        if (resultsText == null) return;
-
         var state = SaveResults.Instance;
+
         if (state == null || !state.HasResults.Value)
         {
-            resultsText.text = "Results not available.";
+            if (resultsText != null)
+            {
+                resultsText.text = "Results not available.";
+                resultsText.gameObject.SetActive(true);
+            }
+
+            if (teamResultsText != null)
+            {
+                teamResultsText.text = "Results not available.";
+                teamResultsText.gameObject.SetActive(false);
+            }
+
             return;
         }
 
@@ -28,24 +39,45 @@ public class ResultsUI : NetworkBehaviour
         GameModeType gameMode = (GameModeType)state.GameMode.Value;
         ScoreMode scoreMode = (ScoreMode)state.ScoreDisplayMode.Value;
 
+        // -------- TEAM / COOP MODE --------
         if (scoreMode == ScoreMode.Team)
         {
             int teamScore = blue + green;
-            resultsText.text = $"Shift Over! You saved {teamScore} patients\n";
+
+            if (resultsText != null)
+                resultsText.gameObject.SetActive(false);
+
+            if (teamResultsText != null)
+            {
+                teamResultsText.gameObject.SetActive(true);
+                teamResultsText.text = $"Shift Complete!\n\nYou saved {teamScore} patients!";
+            }
+
+            return;
         }
+
+        // -------- COMPETITIVE MODE --------
+
+        if (teamResultsText != null)
+            teamResultsText.gameObject.SetActive(false);
+
+        if (resultsText != null)
+            resultsText.gameObject.SetActive(true);
 
         if (blue > green)
         {
-            resultsText.text = $"Blue Hospital Wins!\n\nFinal Scores\nBlue: {blue}\nGreen: {green}";
-        }  
+            resultsText.text =
+                $"Blue Hospital Wins!\n\nFinal Scores\nBlue: {blue}\nGreen: {green}";
+        }
         else if (green > blue)
         {
-            resultsText.text = $"Green Hospital Wins!\n\nFinal Scores\nGreen: {green}\nBlue: {blue}";
+            resultsText.text =
+                $"Green Hospital Wins!\n\nFinal Scores\nGreen: {green}\nBlue: {blue}";
         }
         else
         {
-            resultsText.text = $"It's a tie!\n\nFinal Scores\nBlue: {blue}\nGreen: {green}";
+            resultsText.text =
+                $"It's a tie!\n\nFinal Scores\nBlue: {blue}\nGreen: {green}";
         }
-            
     }
 }
