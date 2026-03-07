@@ -108,7 +108,6 @@ public class CrosshairBehaviour : NetworkBehaviour
         CurrentCollider = hit.collider;
         if (CurrentCollider == null) return;
 
-        // Fast lookup (parent only)
         CurrentPatient = CurrentCollider.GetComponentInParent<PatientBehaviour>();
 
         if (CurrentPatient == null)

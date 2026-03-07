@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class CodeBlueSpawner : NetworkBehaviour
 {
+    //Patients for each hospital
     [SerializeField] private NetworkObject hospitalOnePatient;
     [SerializeField] private NetworkObject hospitalTwoPatient;
 
+    //spawners for the patients
     [SerializeField] private Transform[] hOneRoomSpawns;
     [SerializeField] private Transform[] hTwoRoomSpawns;
 
@@ -16,39 +18,45 @@ public class CodeBlueSpawner : NetworkBehaviour
     // Room volumes in scene
     [SerializeField] private RoomVolume[] roomVolumes;
 
+    //Variables to keep track of the current patient
     private NetworkObject currentHOnePatient;
     private NetworkObject currentHTwoPatient;
 
     private bool started;
 
+    //keeps track of two announcements when in co-op mode (so that each player has a patient to save at all times)
     private enum SpawnStream
     {
         StreamA,
         StreamB
     }
 
-    // Maps patient -> room
+    //Maps patient to a room
     private readonly Dictionary<NetworkObject, (HospitalType hospital, int roomNumber)> patientRoom =
         new Dictionary<NetworkObject, (HospitalType, int)>();
 
-    // Maps patient -> stream
+    //Maps patient to a stream
     private readonly Dictionary<NetworkObject, SpawnStream> patientStream =
         new Dictionary<NetworkObject, SpawnStream>();
 
-    // Patients waiting to despawn when room becomes empty
+    //Patients waiting to despawn when room becomes empty (when the player leaves)
     private readonly Dictionary<(HospitalType hospital, int roomNumber), List<NetworkObject>> pendingDespawnByRoom =
         new Dictionary<(HospitalType, int), List<NetworkObject>>();
 
-    // Last room used by each stream
+    //Last room used by each stream
     private int PlayerOne = -1;
     private int PlayerTwo = -1;
 
     public override void OnNetworkSpawn()
     {
-        if (!IsServer) return;
+        if (!IsServer)
+        {
+            return;
+        }
 
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
 
+        //automatically assign if not already assigned
         if (roomVolumes == null || roomVolumes.Length == 0)
         {
             roomVolumes = FindObjectsByType<RoomVolume>(FindObjectsSortMode.None);
@@ -68,8 +76,10 @@ public class CodeBlueSpawner : NetworkBehaviour
         base.OnDestroy();
 
         if (NetworkManager.Singleton != null)
+        {
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-
+        }
+            
         if (roomVolumes != null)
         {
             foreach (var rv in roomVolumes)
@@ -87,7 +97,8 @@ public class CodeBlueSpawner : NetworkBehaviour
     }
 
     private void TryStart()
-    {
+    {   
+        //make sure everything is set up properly...
         if (started) return;
 
         int connected = NetworkManager.Singleton.ConnectedClientsList.Count;
@@ -98,7 +109,7 @@ public class CodeBlueSpawner : NetworkBehaviour
         var timer = FindFirstObjectByType<Timer>();
         if (timer != null)
             timer.StartMatchTimerServer();
-
+        //...then trigger code blue (start gameplay)
         TriggerCodeBlue();
     }
 
@@ -109,9 +120,9 @@ public class CodeBlueSpawner : NetworkBehaviour
         var modeConfig = FindFirstObjectByType<ConfigureGameMode>();
         bool coop = modeConfig != null && modeConfig.gameMode == GameModeType.Coop;
 
+        //code blue for co-op mode: two streams in the same hospital
         if (coop)
         {
-            // Two streams in the same hospital
             SpawnPatient(
                 ref currentHOnePatient,
                 hospitalOnePatient,
@@ -133,7 +144,7 @@ public class CodeBlueSpawner : NetworkBehaviour
             return;
         }
 
-        // Competitive: one stream per hospital
+        //code blue for competitive mode: one stream per hospital
         SpawnPatient(
             ref currentHOnePatient,
             hospitalOnePatient,
@@ -153,14 +164,8 @@ public class CodeBlueSpawner : NetworkBehaviour
         );
     }
 
-    private void SpawnPatient(
-        ref NetworkObject currentPatient,
-        NetworkObject prefab,
-        Transform[] spawnPoints,
-        SpawnStream stream,
-        ref int lastRoomUsed,
-        NetworkObject otherActivePatient
-    )
+    //logic for spawning patuents
+    private void SpawnPatient(ref NetworkObject currentPatient, NetworkObject prefab, Transform[] spawnPoints, SpawnStream stream, ref int lastRoomUsed, NetworkObject otherActivePatient)
     {
         if (prefab == null) return;
         if (spawnPoints == null || spawnPoints.Length == 0) return;
@@ -192,6 +197,7 @@ public class CodeBlueSpawner : NetworkBehaviour
 
         lastRoomUsed = roomNumber;
 
+        //and make announcements accordingly
         if (announcementSystem != null)
         {
             var modeConfig = FindFirstObjectByType<ConfigureGameMode>();
@@ -218,6 +224,8 @@ public class CodeBlueSpawner : NetworkBehaviour
         }
     }
 
+    //Chooses a random room to spawn a patient.
+    //Has logic to make sure a patient is not spawned in the exact same room after or in the same room as a room that is currently occupied by the other player (in the case of co-op mode)
     private int ChooseSpawnIndex(Transform[] spawnPoints, int lastRoomUsed, NetworkObject otherActivePatient)
     {
         if (spawnPoints == null || spawnPoints.Length == 0)
@@ -232,9 +240,6 @@ public class CodeBlueSpawner : NetworkBehaviour
 
         List<int> validIndices = new List<int>();
 
-        // Best case:
-        // avoid the stream's own last room
-        // avoid the other active patient's room (co-op only)
         for (int i = 0; i < spawnPoints.Length; i++)
         {
             var spawn = spawnPoints[i];
@@ -257,8 +262,7 @@ public class CodeBlueSpawner : NetworkBehaviour
             return validIndices[Random.Range(0, validIndices.Count)];
         }
 
-        // Fallback:
-        // still avoid immediate repeat if possible
+        //Avoiding immediate respawn in the same room as mentioned above
         validIndices.Clear();
 
         for (int i = 0; i < spawnPoints.Length; i++)
@@ -280,11 +284,11 @@ public class CodeBlueSpawner : NetworkBehaviour
             return validIndices[Random.Range(0, validIndices.Count)];
         }
 
-        // Final fallback:
-        // if there is literally no other option, use anything
+        //if there is no other option on where to have a patient spawn, use anything (very unlikely, just a precaution)
         return Random.Range(0, spawnPoints.Length);
     }
 
+    //Finds room volume (needed for keeping track)
     private RoomVolume FindRoomVolume(HospitalType hospital, int roomNumber)
     {
         if (roomVolumes == null) return null;
@@ -299,6 +303,7 @@ public class CodeBlueSpawner : NetworkBehaviour
         return null;
     }
 
+    //What to do when a patient lives or dies
     private void OnPatientResolvedServer(PatientBehaviour pb)
     {
         if (!IsServer) return;
@@ -312,7 +317,8 @@ public class CodeBlueSpawner : NetworkBehaviour
 
         if (!patientStream.TryGetValue(netObj, out var stream))
             return;
-
+        
+        //scoring logic (+1 for save, -1 for death)
         int scoreDelta = pb.Saved.Value ? 1 : -1;
 
         ScoreSystem score = GetPlayerScoreForHospital(roomInfo.hospital);
@@ -340,7 +346,10 @@ public class CodeBlueSpawner : NetworkBehaviour
             }
 
             if (!list.Contains(netObj))
+            {
                 list.Add(netObj);
+            }
+                
         }
 
         var modeConfig = FindFirstObjectByType<ConfigureGameMode>();
@@ -348,7 +357,7 @@ public class CodeBlueSpawner : NetworkBehaviour
 
         if (coop)
         {
-            // In coop, both streams spawn into the same hospital
+            //Co-op mode
             if (stream == SpawnStream.StreamA)
             {
                 SpawnPatient(
@@ -400,6 +409,7 @@ public class CodeBlueSpawner : NetworkBehaviour
         }
     }
 
+    //Logic for after the player leaves the room
     private void OnRoomBecameEmptyServer(HospitalType hospital, int roomNumber)
     {
         if (!IsServer) return;
@@ -428,6 +438,7 @@ public class CodeBlueSpawner : NetworkBehaviour
         pendingDespawnByRoom.Remove(key);
     }
 
+    //Ensuring scoring system performs as intended
     private ScoreSystem GetPlayerScoreForHospital(HospitalType hospital)
     {
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
@@ -445,6 +456,7 @@ public class CodeBlueSpawner : NetworkBehaviour
         return null;
     }
 
+    //More networking logic (used ChatGPT to help with this method)
     private ClientRpcParams BuildTargetsForHospital(HospitalType hospital)
     {
         List<ulong> targets = new List<ulong>();
@@ -470,10 +482,8 @@ public class CodeBlueSpawner : NetworkBehaviour
         };
     }
 
-    private IEnumerator DelayedAnnouncement(
-    HospitalType hospital,
-    int roomNumber,
-    float delay)
+    //Delay between announcements
+    private IEnumerator DelayedAnnouncement(HospitalType hospital, int roomNumber, float delay)
     {
         yield return new WaitForSeconds(delay);
 

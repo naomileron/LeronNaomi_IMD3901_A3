@@ -8,24 +8,27 @@ public class BedAnimation : MonoBehaviour
 
     private void Awake()
     {
-        // FORCE the animator to be the one on THIS object (or its children)
+        //Force the animator to be on this object or its children
         if (animator == null)
+        {
             animator = GetComponent<Animator>();
-
+        } 
         if (animator == null)
+        {
             animator = GetComponentInChildren<Animator>(true);
-
-        //Debug.Log($"[BedAnimation] Awake on {name} -> animatorGO={(animator ? animator.gameObject.name : "NULL")} controller={(animator && animator.runtimeAnimatorController ? animator.runtimeAnimatorController.name : "NONE")}", this);
+        }
+        
     }
 
     public void SetLowered(bool lowered)
     {
+        //prevent errors from null references
         if (animator == null)
         {
             //Debug.LogError("[BedAnimation] Animator is NULL.", this);
             return;
         }
-
+        //otherwise continue    
         if (!animator.gameObject.activeInHierarchy)
         {
             StartCoroutine(SetWhenActive(lowered));
@@ -39,6 +42,7 @@ public class BedAnimation : MonoBehaviour
 
     private IEnumerator SetWhenActive(bool lowered)
     {
+        //play animation when triggered to do so by the bool
         for (int i = 0; i < 60; i++)
         {
             if (animator != null && animator.gameObject.activeInHierarchy)
@@ -48,7 +52,5 @@ public class BedAnimation : MonoBehaviour
             }
             yield return null;
         }
-
-        //Debug.LogWarning("[BedAnimation] Never became active in time, lowered state skipped.", this);
     }
 }

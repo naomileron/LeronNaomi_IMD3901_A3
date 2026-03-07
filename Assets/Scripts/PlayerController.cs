@@ -46,18 +46,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    /*
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        //Debug.Log("Scene has started!");
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-    } */
-
-    // Update is called once per frame
     void Update()
     {
 
@@ -70,8 +58,6 @@ public class PlayerController : NetworkBehaviour
         {
             return;
         }
-
-        //Debug.Log("Scene is updating!");
 
         Vector2 moveInput = Keyboard.current != null ? new Vector2 
             (

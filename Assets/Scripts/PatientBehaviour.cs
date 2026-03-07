@@ -74,7 +74,6 @@ public class PatientBehaviour : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // Stop audio locally so nothing auto-plays
         StopAllAudioLocal();
 
         if (cprHandsRoot != null)
@@ -85,14 +84,12 @@ public class PatientBehaviour : NetworkBehaviour
 
         BedLowered.OnValueChanged += OnBedLoweredChanged;
 
-        // SERVER setup
         if (IsServer)
         {
             startTimeServer = NetworkManager.Singleton.ServerTime.Time;
             Resolved.OnValueChanged += OnResolvedChangedServer;
         }
 
-        // CLIENT setup (host is also a client)
         if (IsClient)
         {
             Resolved.OnValueChanged += OnResolvedChangedClient;
@@ -150,14 +147,13 @@ public class PatientBehaviour : NetworkBehaviour
         }
     }
 
-    // ---------------- CLIENT ROOM BINDING ----------------
+    //client room binding
 
     private void BindRoomVolumeWhenReadyClient()
     {
         if (roomBindRequested) return;
         roomBindRequested = true;
 
-        // Retry for a short time until RoomNumber arrives and volume exists
         roomHookRoutine = StartCoroutine(RoomHookRetryClient());
     }
 
@@ -171,12 +167,10 @@ public class PatientBehaviour : NetworkBehaviour
 
             yield return null;
         }
-
-        // Only warn after we truly failed for a while
-        Debug.LogWarning(
-            $"[Patient] Failed to bind RoomVolume after retries netId={NetworkObjectId} hospital={(HospitalType)HospitalNet.Value} room={RoomNumber.Value}",
-            this
-        );
+        //Debug.LogWarning(
+        //    $"[Patient] Failed to bind RoomVolume after retries netId={NetworkObjectId} hospital={(HospitalType)HospitalNet.Value} room={RoomNumber.Value}",
+        //    this
+        //);
     }
 
     private bool TryHookRoomVolumeClient()
@@ -186,7 +180,6 @@ public class PatientBehaviour : NetworkBehaviour
         HospitalType myHospital = (HospitalType)HospitalNet.Value;
         int myRoom = RoomNumber.Value;
 
-        // IMPORTANT: room==0 right after spawn is normal; do not warn
         if (myRoom <= 0) return false;
 
         var volumes = FindObjectsByType<RoomVolume>(FindObjectsSortMode.None);
@@ -206,12 +199,10 @@ public class PatientBehaviour : NetworkBehaviour
 
         if (myRoomVolume == null)
         {
-            // Now worth warning: identity is valid but no matching volume exists
-            Debug.LogWarning($"[Patient] No matching RoomVolume for ({myHospital},{myRoom}) netId={NetworkObjectId}", this);
+            //Debug.LogWarning($"[Patient] No matching RoomVolume for ({myHospital},{myRoom}) netId={NetworkObjectId}", this);
             return false;
         }
 
-        // Ensure we don't double-subscribe
         myRoomVolume.OnLocalPlayerEntered -= OnLocalPlayerEnteredRoom;
         myRoomVolume.OnLocalPlayerExited -= OnLocalPlayerExitedRoom;
 
@@ -229,7 +220,6 @@ public class PatientBehaviour : NetworkBehaviour
         if (myRoomVolume == null) return;
         if (myRoomVolume.VolumeCollider == null) return;
 
-        // Find local player
         var players = FindObjectsByType<PlayerHospital>(FindObjectsSortMode.None);
         PlayerHospital local = null;
 
@@ -250,7 +240,7 @@ public class PatientBehaviour : NetworkBehaviour
         }
     }
 
-    // ---------------- CLIENT ROOM CALLBACKS ----------------
+    //checking if client is in room
 
     private void OnLocalPlayerEnteredRoom()
     {
@@ -276,7 +266,7 @@ public class PatientBehaviour : NetworkBehaviour
         UpdateMonitorAudioLocal();
     }
 
-    // ---------------- AUDIO ----------------
+    //audio
 
     private void StopAllAudioLocal()
     {
@@ -292,15 +282,13 @@ public class PatientBehaviour : NetworkBehaviour
         bool resolved = Resolved.Value;
         bool saved = Saved.Value;
 
-        // Stop all to prevent overlap
+
         StopAllAudioLocal();
 
-        // Default mute states
         if (monitorAudio != null) monitorAudio.mute = false;
         if (monitorAudioHealthy != null) monitorAudioHealthy.mute = true;
         if (monitorAudioFlatline != null) monitorAudioFlatline.mute = true;
 
-        // Saved -> healthy
         if (resolved && saved)
         {
             if (monitorAudioHealthy != null && monitorAudioHealthy.clip != null)
@@ -312,7 +300,6 @@ public class PatientBehaviour : NetworkBehaviour
             return;
         }
 
-        // Dead -> flatline
         if (resolved && !saved)
         {
             if (monitorAudioFlatline != null && monitorAudioFlatline.clip != null)
@@ -323,7 +310,6 @@ public class PatientBehaviour : NetworkBehaviour
             }
             else if (monitorAudio != null && monitorAudio.clip != null)
             {
-                // fallback if flatline source missing
                 monitorAudio.mute = false;
                 monitorAudio.loop = true;
                 monitorAudio.Play();
@@ -331,7 +317,6 @@ public class PatientBehaviour : NetworkBehaviour
             return;
         }
 
-        // Active -> distressed monitor
         if (monitorAudio != null && monitorAudio.clip != null)
         {
             monitorAudio.mute = false;
@@ -339,8 +324,6 @@ public class PatientBehaviour : NetworkBehaviour
             monitorAudio.Play();
         }
     }
-
-    // ---------------- SERVER UPDATE ----------------
 
     private void Update()
     {
@@ -356,7 +339,7 @@ public class PatientBehaviour : NetworkBehaviour
         }
     }
 
-    // ---------------- HIT TESTING ----------------
+    //pressing the button
 
     public bool IsBedButton(Collider hit)
     {
@@ -380,7 +363,7 @@ public class PatientBehaviour : NetworkBehaviour
         return hit.CompareTag("patient");
     }
 
-    // ---------------- BED LOWER ----------------
+    //Lowering the bed
 
     [ServerRpc(RequireOwnership = false)]
     public void LowerBedServerRpc(ServerRpcParams rpcParams = default)
@@ -410,7 +393,7 @@ public class PatientBehaviour : NetworkBehaviour
             buttonAnim.PlayPress();
     }
 
-    // ---------------- CPR ----------------
+    //CPR
 
     [ServerRpc(RequireOwnership = false)]
     public void CompressionServerRpc(ServerRpcParams rpcParams = default)
