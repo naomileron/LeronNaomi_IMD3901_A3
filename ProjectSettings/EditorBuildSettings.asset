@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/ModeSelection.unity
     guid: 02fef71dd5248d641abcda4b1f5a2188
   - enabled: 1
+    path: Assets/Scenes/instructionsScreen.unity
+    guid: 3d95c0aeee628b04f9d16851989b386a
+  - enabled: 1
     path: Assets/Scenes/CompetitiveMode.unity
     guid: 41a44471fec24e241a0fd1ec23aaa016
   - enabled: 1
