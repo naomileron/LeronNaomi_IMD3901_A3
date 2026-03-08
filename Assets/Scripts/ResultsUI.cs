@@ -9,7 +9,36 @@ public class ResultsUI : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        UpdateText();
+        var state = SaveResults.Instance;
+
+        if (state != null)
+        {
+            // Update immediately
+            UpdateText();
+
+            // Update again if results arrive later
+            state.HasResults.OnValueChanged += OnResultsChanged;
+        }
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        var state = SaveResults.Instance;
+
+        if (state != null)
+        {
+            state.HasResults.OnValueChanged -= OnResultsChanged;
+        }
+    }
+
+    private void OnResultsChanged(bool oldValue, bool newValue)
+    {
+        if (newValue)
+        {
+            UpdateText();
+        }
     }
 
     private void UpdateText()
@@ -39,7 +68,6 @@ public class ResultsUI : NetworkBehaviour
         GameModeType gameMode = (GameModeType)state.GameMode.Value;
         ScoreMode scoreMode = (ScoreMode)state.ScoreDisplayMode.Value;
 
-        // -------- TEAM / COOP MODE --------
         if (scoreMode == ScoreMode.Team)
         {
             int teamScore = blue + green;
@@ -50,13 +78,11 @@ public class ResultsUI : NetworkBehaviour
             if (teamResultsText != null)
             {
                 teamResultsText.gameObject.SetActive(true);
-                teamResultsText.text = $"Shift Complete!\n\nYou saved {teamScore} patients!";
+                teamResultsText.text = $"Shift Complete!\nYou saved {teamScore} patients!";
             }
 
             return;
         }
-
-        // -------- COMPETITIVE MODE --------
 
         if (teamResultsText != null)
             teamResultsText.gameObject.SetActive(false);
@@ -67,17 +93,17 @@ public class ResultsUI : NetworkBehaviour
         if (blue > green)
         {
             resultsText.text =
-                $"Blue Hospital Wins!\n\nFinal Scores\nBlue: {blue}\nGreen: {green}";
+                $"Blue Hospital Wins!\nFinal Scores\nBlue: {blue}\nGreen: {green}";
         }
         else if (green > blue)
         {
             resultsText.text =
-                $"Green Hospital Wins!\n\nFinal Scores\nGreen: {green}\nBlue: {blue}";
+                $"Green Hospital Wins!\nFinal Scores\nGreen: {green}\nBlue: {blue}";
         }
         else
         {
             resultsText.text =
-                $"It's a tie!\n\nFinal Scores\nBlue: {blue}\nGreen: {green}";
+                $"It's a tie!\nFinal Scores\nBlue: {blue}\nGreen: {green}";
         }
     }
 }

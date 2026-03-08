@@ -212,6 +212,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Coop Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 7358471780322222409, guid: c17504ed68f6a6d4c9ee648daacd1326, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7458355083638303090, guid: c17504ed68f6a6d4c9ee648daacd1326, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
