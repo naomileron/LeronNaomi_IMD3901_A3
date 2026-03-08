@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
 
+//class code
 public class PlayerController : NetworkBehaviour
 {
     public float speed = 5f;

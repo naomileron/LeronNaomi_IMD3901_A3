@@ -5,58 +5,56 @@ using UnityEngine;
 
 public class PatientBehaviour : NetworkBehaviour
 {
-    // Interaction targets
+    //Interaction targets
     [SerializeField] private Collider bedButtonCollider;
     [SerializeField] private Collider patientCollider;
 
-    // When the heart monitor sfx flatlines
+    //When the heart monitor sfx flatlines
     [SerializeField] private float flatlineTimeSeconds = 43f;
 
-    // Number of compressions needed to save the patient
+    //Number of compressions needed to save the patient
     [SerializeField] private int compressionsToSave = 10;
 
     [SerializeField] private float minSecondsBetweenCompressions = 0.25f;
     private double lastCompressionTimeServer = -999;
 
-    // Audio
-    [SerializeField] private AudioSource monitorAudio;          // distressed/active
-    [SerializeField] private AudioSource monitorAudioHealthy;   // saved
-    [SerializeField] private AudioSource monitorAudioFlatline;  // dead
+    //Audio
+    [SerializeField] private AudioSource monitorAudio;          
+    [SerializeField] private AudioSource monitorAudioHealthy;   
+    [SerializeField] private AudioSource monitorAudioFlatline;  
 
-    // Animation scripts
+    //Animation scripts
     [SerializeField] private BedAnimation bedAnim;
     [SerializeField] private ButtonAnimation buttonAnim;
     [SerializeField] private CPRAnimation cprAnim;
 
     [SerializeField] private GameObject cprHandsRoot;
 
-    // which hospital this patient belongs to (set by spawner)
+    //which hospital this patient belongs to (set by spawner)
     [SerializeField] private HospitalType hospital = HospitalType.Blue;
 
-    // Networked identity so clients know which RoomVolume this patient belongs to
+    //Networked identity so clients know which RoomVolume this patient belongs to
     public NetworkVariable<int> RoomNumber = new(0);
     public NetworkVariable<int> HospitalNet = new((int)HospitalType.Blue);
 
-    // Networked state (server writes, clients read)
+    //Networked state (server writes, clients read)
     public NetworkVariable<bool> BedLowered = new(false);
     public NetworkVariable<int> CompressionCount = new(0);
     public NetworkVariable<bool> Resolved = new(false);
     public NetworkVariable<bool> Saved = new(false);
 
-    // Server-only resolved event
+    //Server-only resolved event
     public event Action<PatientBehaviour> OnResolvedServer;
     private bool resolvedEventFired = false;
 
-    // Server timing
+    //Server timing
     private double startTimeServer;
 
-    // CLIENT: audio gating by room
     private RoomVolume myRoomVolume;
     private bool localPlayerInRoom;
     private bool roomBindRequested;
     private Coroutine roomHookRoutine;
 
-    // --- Called by spawner AFTER patient.Spawn() ---
     public void InitializeRoomIdentityServer(HospitalType h, int roomNumber)
     {
         if (!IsServer) return;
@@ -148,7 +146,6 @@ public class PatientBehaviour : NetworkBehaviour
     }
 
     //client room binding
-
     private void BindRoomVolumeWhenReadyClient()
     {
         if (roomBindRequested) return;
@@ -159,7 +156,6 @@ public class PatientBehaviour : NetworkBehaviour
 
     private IEnumerator RoomHookRetryClient()
     {
-        // Try for up to ~2 seconds
         for (int i = 0; i < 120; i++)
         {
             if (TryHookRoomVolumeClient())
@@ -167,10 +163,6 @@ public class PatientBehaviour : NetworkBehaviour
 
             yield return null;
         }
-        //Debug.LogWarning(
-        //    $"[Patient] Failed to bind RoomVolume after retries netId={NetworkObjectId} hospital={(HospitalType)HospitalNet.Value} room={RoomNumber.Value}",
-        //    this
-        //);
     }
 
     private bool TryHookRoomVolumeClient()
@@ -209,7 +201,7 @@ public class PatientBehaviour : NetworkBehaviour
         myRoomVolume.OnLocalPlayerEntered += OnLocalPlayerEnteredRoom;
         myRoomVolume.OnLocalPlayerExited += OnLocalPlayerExitedRoom;
 
-        // If player spawned inside the room, start immediately
+        //If player spawned inside the room, start immediately (unlikely because of spawn points)
         ForceInitialRoomCheckClient();
 
         return true;
@@ -241,7 +233,6 @@ public class PatientBehaviour : NetworkBehaviour
     }
 
     //checking if client is in room
-
     private void OnLocalPlayerEnteredRoom()
     {
         localPlayerInRoom = true;
@@ -267,7 +258,6 @@ public class PatientBehaviour : NetworkBehaviour
     }
 
     //audio
-
     private void StopAllAudioLocal()
     {
         if (monitorAudio != null) monitorAudio.Stop();
@@ -340,7 +330,6 @@ public class PatientBehaviour : NetworkBehaviour
     }
 
     //pressing the button
-
     public bool IsBedButton(Collider hit)
     {
         if (hit == null) return false;
@@ -364,7 +353,6 @@ public class PatientBehaviour : NetworkBehaviour
     }
 
     //Lowering the bed
-
     [ServerRpc(RequireOwnership = false)]
     public void LowerBedServerRpc(ServerRpcParams rpcParams = default)
     {
@@ -394,7 +382,6 @@ public class PatientBehaviour : NetworkBehaviour
     }
 
     //CPR
-
     [ServerRpc(RequireOwnership = false)]
     public void CompressionServerRpc(ServerRpcParams rpcParams = default)
     {

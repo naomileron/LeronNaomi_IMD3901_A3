@@ -21,8 +21,6 @@ public class Scoreboard : MonoBehaviour
     private void Start()
     {
         gameModeConfig = FindFirstObjectByType<ConfigureGameMode>();
-
-        // Try a few times while Netcode finishes spawning
         InvokeRepeating(nameof(TryBindOnce), 0.1f, 0.25f);
     }
 
@@ -53,13 +51,12 @@ public class Scoreboard : MonoBehaviour
             else if (ph.Hospital.Value == HospitalType.Green) greenScore = ss;
         }
 
-        // Show placeholders if not ready yet
+        //Show placeholders if not ready yet
         if (blueScoreText != null) blueScoreText.text = blueScore != null ? $"BLUE HOSPITAL: {blueScore.Score.Value}" : "BLUE HOSPITAL: --";
         if (greenScoreText != null) greenScoreText.text = greenScore != null ? $"GREEN HOSPITAL: {greenScore.Score.Value}" : "GREEN HOSPITAL: --";
 
         if (blueScore == null || greenScore == null) return;
 
-        // Subscribe once
         blueScore.Score.OnValueChanged += OnBlueChanged;
         greenScore.Score.OnValueChanged += OnGreenChanged;
 

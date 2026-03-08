@@ -1,6 +1,6 @@
 using UnityEngine;
 
-//For describing whihc hospital a spawn point belongs to
+//For describing which hospital a spawn point belongs to
 public enum HospitalType : byte
 { 
     Blue = 0,
@@ -43,7 +43,7 @@ public class RoomSpawnPoint : MonoBehaviour
 
         if (parentTransform != null)
         {
-            //Convert to lowercase so name matching is not case sensitive
+            //avoid case sensitivity
             string parentName = parentTransform.name.ToLower();
 
             if (parentName.Contains("one"))

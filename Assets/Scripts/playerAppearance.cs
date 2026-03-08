@@ -27,7 +27,6 @@ public class PlayerAppearance : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // Apply immediately (important for late join + host)
         ApplyMaterials(role.Value);
 
         role.OnValueChanged += OnRoleChanged;

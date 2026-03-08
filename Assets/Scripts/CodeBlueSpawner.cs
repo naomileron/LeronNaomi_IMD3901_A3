@@ -154,14 +154,7 @@ public class CodeBlueSpawner : NetworkBehaviour
             null
         );
 
-        SpawnPatient(
-            ref currentHTwoPatient,
-            hospitalTwoPatient,
-            hTwoRoomSpawns,
-            SpawnStream.StreamB,
-            ref PlayerTwo,
-            null
-        );
+        SpawnPatient(ref currentHTwoPatient, hospitalTwoPatient, hTwoRoomSpawns, SpawnStream.StreamB, ref PlayerTwo, null);
     }
 
     //logic for spawning patuents
@@ -215,11 +208,7 @@ public class CodeBlueSpawner : NetworkBehaviour
             {
                 ClientRpcParams targets = BuildTargetsForHospital(hospital);
 
-                announcementSystem.PlayRoomAnnouncementClientRpc(
-                    hospital,
-                    roomNumber,
-                    targets
-                );
+                announcementSystem.PlayRoomAnnouncementClientRpc(hospital, roomNumber, targets);
             }
         }
     }
@@ -360,25 +349,11 @@ public class CodeBlueSpawner : NetworkBehaviour
             //Co-op mode
             if (stream == SpawnStream.StreamA)
             {
-                SpawnPatient(
-                    ref currentHOnePatient,
-                    hospitalOnePatient,
-                    hOneRoomSpawns,
-                    SpawnStream.StreamA,
-                    ref PlayerOne,
-                    currentHTwoPatient
-                );
+                SpawnPatient(ref currentHOnePatient, hospitalOnePatient, hOneRoomSpawns, SpawnStream.StreamA, ref PlayerOne, currentHTwoPatient);
             }
             else
             {
-                SpawnPatient(
-                    ref currentHTwoPatient,
-                    hospitalOnePatient,
-                    hOneRoomSpawns,
-                    SpawnStream.StreamB,
-                    ref PlayerTwo,
-                    currentHOnePatient
-                );
+                SpawnPatient(ref currentHTwoPatient, hospitalOnePatient, hOneRoomSpawns, SpawnStream.StreamB, ref PlayerTwo, currentHOnePatient);
             }
 
             return;
@@ -387,25 +362,11 @@ public class CodeBlueSpawner : NetworkBehaviour
         // Competitive mode
         if (stream == SpawnStream.StreamA)
         {
-            SpawnPatient(
-                ref currentHOnePatient,
-                hospitalOnePatient,
-                hOneRoomSpawns,
-                SpawnStream.StreamA,
-                ref PlayerOne,
-                null
-            );
+            SpawnPatient(ref currentHOnePatient, hospitalOnePatient, hOneRoomSpawns, SpawnStream.StreamA, ref PlayerOne, null);
         }
         else
         {
-            SpawnPatient(
-                ref currentHTwoPatient,
-                hospitalTwoPatient,
-                hTwoRoomSpawns,
-                SpawnStream.StreamB,
-                ref PlayerTwo,
-                null
-            );
+            SpawnPatient(ref currentHTwoPatient, hospitalTwoPatient, hTwoRoomSpawns, SpawnStream.StreamB, ref PlayerTwo, null);
         }
     }
 

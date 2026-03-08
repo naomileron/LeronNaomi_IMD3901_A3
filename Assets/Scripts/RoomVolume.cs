@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-// checks if the player is still in the room (used chatGPT to figure this out)
+//checks if the player is still in the room (used chatGPT to figure this out)
 public class RoomVolume : NetworkBehaviour
 {
     public HospitalType Hospital;
@@ -11,7 +11,6 @@ public class RoomVolume : NetworkBehaviour
 
     public event Action<HospitalType, int> OnRoomBecameEmptyServer;
 
-    // CLIENT local-only events (for audio gating)
     public event Action OnLocalPlayerEntered;
     public event Action OnLocalPlayerExited;
 
@@ -31,7 +30,6 @@ public class RoomVolume : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // ---------- CLIENT LOCAL ENTER ----------
         var phClient = other.GetComponentInParent<PlayerHospital>();
         if (phClient != null && phClient.IsOwner)
         {
@@ -42,13 +40,11 @@ public class RoomVolume : NetworkBehaviour
             }
         }
 
-        // ---------- SERVER ENTER ----------
         if (!IsServer) return;
 
         var netObj = other.GetComponentInParent<NetworkObject>();
         if (netObj == null) return;
 
-        // Treat any player-owned PlayerObject as "a player"
         if (NetworkManager.Singleton.ConnectedClients.TryGetValue(netObj.OwnerClientId, out var client) &&
             client.PlayerObject == netObj)
         {
@@ -58,7 +54,6 @@ public class RoomVolume : NetworkBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        // ---------- CLIENT LOCAL EXIT ----------
         var phClient = other.GetComponentInParent<PlayerHospital>();
         if (phClient != null && phClient.IsOwner)
         {
@@ -69,7 +64,6 @@ public class RoomVolume : NetworkBehaviour
             }
         }
 
-        // ---------- SERVER EXIT ----------
         if (!IsServer) return;
 
         var netObj = other.GetComponentInParent<NetworkObject>();

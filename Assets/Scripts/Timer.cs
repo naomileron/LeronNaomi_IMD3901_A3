@@ -81,7 +81,6 @@ public class Timer : NetworkBehaviour
         ended.Value = true;
         running.Value = false;
 
-        // final scores on server
         int blueScore = 0;
         int greenScore = 0;
 
@@ -98,7 +97,6 @@ public class Timer : NetworkBehaviour
             if (ph.Hospital.Value == HospitalType.Green) greenScore = ss.Score.Value;
         }
 
-        // read mode config from scene
         var modeConfig = FindFirstObjectByType<ConfigureGameMode>();
 
         GameModeType gameMode = GameModeType.Competitive;
@@ -110,7 +108,6 @@ public class Timer : NetworkBehaviour
             scoreMode = modeConfig.scoreMode;
         }
 
-        // ensure results state exists and store results
         var existing = SaveResults.Instance;
         if (existing == null)
         {
@@ -127,7 +124,7 @@ public class Timer : NetworkBehaviour
 
         existing.SetResultsServer(blueScore, greenScore, gameMode, scoreMode);
 
-        // load results scene for all players
+        //load results scene for all players
         NetworkManager.SceneManager.LoadScene(resultsScene, LoadSceneMode.Single);
     }
 }

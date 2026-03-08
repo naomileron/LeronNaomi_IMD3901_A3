@@ -9,7 +9,6 @@ public class PlayerHospital : NetworkBehaviour
         NetworkVariableWritePermission.Server
     );
 
-    //runs when the player object spawns in the network
     public override void OnNetworkSpawn()
     {
         if (!IsServer)

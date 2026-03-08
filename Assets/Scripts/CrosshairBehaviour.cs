@@ -65,7 +65,6 @@ public class CrosshairBehaviour : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        //only update targeting at a fixed rate
         if (Time.time >= nextRaycastTime)
         {
             nextRaycastTime = Time.time + raycastRate;
@@ -80,7 +79,6 @@ public class CrosshairBehaviour : NetworkBehaviour
             CurrentPatient.BedLowered.Value &&
             !CurrentPatient.Resolved.Value;
 
-        //avoid SetActive spam
         if (canShowCpr != handsShowingCpr)
         {
             handsShowingCpr = canShowCpr;

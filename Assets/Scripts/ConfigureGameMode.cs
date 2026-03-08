@@ -1,6 +1,6 @@
 using UnityEngine;
 
-//Tells other script what logic to use based on the game mode
+//Tells other scripts what logic to use based on the game mode
 public enum GameModeType
 { 
     Competitive,

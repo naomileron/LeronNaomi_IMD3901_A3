@@ -13,10 +13,11 @@ public class ResultsUI : NetworkBehaviour
 
         if (state != null)
         {
-            // Update immediately
+            //Update immediately...
             UpdateText();
 
-            // Update again if results arrive later
+            //...but update again if results arrive later (makes sure the results show for player 2 as well)
+            //Used chatGPT to help fix this bug
             state.HasResults.OnValueChanged += OnResultsChanged;
         }
     }
